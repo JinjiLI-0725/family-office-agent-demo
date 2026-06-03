@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Family Office AI Agent",
+  title: "Family Office Insurance Agent",
   description: "A private data hub and intelligent risk management agent demo for high-net-worth families.",
 };
 
