@@ -88,14 +88,19 @@ export function FamilyOfficeAgentPage() {
   });
   const [selectedRiskFlags, setSelectedRiskFlags] = useState<RiskFlagKey[]>(["beneficiaryUpdate", "crossBorder"]);
 
-  const copy = uiCopy[lang];
+  const copy = uiCopy[lang] as Record<string, string>;
   const selectedPrompt = useMemo(
     () => prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0],
     [selectedPromptId],
   );
   const response = agentResponses[selectedPromptId];
   const steps = agentRuns[selectedPromptId];
-  const reviewChips = reviewChipKeys[selectedPromptId].map((key) => copy[key]);
+  const reviewChips = response.memoReview?.[lang]
+    ? response.memoReview[lang]
+        .split(/[、/,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
   const runId = `#FO-RUN-${String(18 + runCount).padStart(3, "0")}`;
   const executionMessages = [copy.classifyingRequest, copy.scanningRecords, copy.checkingMissing, copy.briefGenerated];
 
