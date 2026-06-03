@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { AgentResponse, Lang } from "@/data/familyOfficeAgentMock";
 
 export function AgentResultPanel({ response, lang, copy, reviewChips }: { response: AgentResponse; lang: Lang; copy: Record<string, string>; reviewChips: string[] }) {
-  const previewSections = response.sections.filter((section) => ["findings", "actions", "nextSteps"].includes(section.key)).slice(0, 2);
+  const previewSections = response.sections.filter((section) => ["needs", "signals", "routing", "followUp"].includes(section.key)).slice(0, 3);
 
   return (
     <section className="rounded-[1.75rem] border border-[#e0d8ca] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(40,35,28,0.08)]">
