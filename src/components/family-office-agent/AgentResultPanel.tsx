@@ -1,76 +1,47 @@
-import type { ReactNode } from "react";
-import type { AgentResponse, Lang } from "@/data/familyOfficeAgentMock";
+import type { ClientFollowUpProfile, Lang, RoutingStatus } from "@/data/familyOfficeAgentMock";
 
-export function AgentResultPanel({ response, lang, copy, reviewChips }: { response: AgentResponse; lang: Lang; copy: Record<string, string>; reviewChips: string[] }) {
-  const previewSections = response.sections.filter((section) => ["needs", "signals", "routing", "followUp"].includes(section.key)).slice(0, 3);
+const statusStyle: Record<RoutingStatus, string> = {
+  Queued: "border-[#dbe3ec] bg-[#f8fafc] text-[#536579]",
+  "Review Required": "border-[#e5c46f] bg-[#fff8e6] text-[#8a6419]",
+  "Ready for Meeting": "border-[#b7dfcf] bg-[#eefaf5] text-[#1f6b5a]",
+};
 
+const statusCopyKey: Record<RoutingStatus, string> = {
+  Queued: "queued",
+  "Review Required": "reviewRequired",
+  "Ready for Meeting": "readyForMeeting",
+};
+
+export function AgentResultPanel({ profile, lang, copy }: { profile: ClientFollowUpProfile; lang: Lang; copy: Record<string, string> }) {
   return (
-    <section className="rounded-[1.75rem] border border-[#e0d8ca] bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(40,35,28,0.08)]">
-      <div className="border-b border-[#e7dfd2] pb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7b45]">{copy.outputReview}</p>
-        <h2 className="mt-2 text-2xl font-semibold text-[#182230]">{copy.generatedBrief} {response.briefId}</h2>
-        <p className="mt-1 text-sm text-[#667085]">{response.title[lang]}</p>
+    <section className="rounded-[1.75rem] border border-[#dbe2ea] bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.07)]">
+      <div className="border-b border-[#e8edf3] pb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#64748b]">{copy.advisorRouting}</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight text-[#0f2337]">{copy.recommendedInternalRouting}</h2>
+        <p className="mt-2 text-sm leading-6 text-[#64748b]">{profile.internalRouting[lang]}</p>
       </div>
 
-      <div className="mt-4 rounded-2xl border border-[#e7dfd2] bg-white p-4">
-        <div className="space-y-2 text-sm">
-          <MemoMeta label={copy.preparedFor} value={response.preparedFor[lang]} />
-          <MemoMeta label={copy.preparedBy} value={response.preparedBy[lang]} />
-          <MemoMeta label={copy.review} value={response.memoReview[lang]} />
-          <MemoMeta label={copy.memoStatus} value={response.memoStatus[lang]} />
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {reviewChips.map((chip) => (
-          <span key={chip} className="rounded-full border border-[#d8bd80] bg-[#fff8e8] px-3 py-1 text-xs font-semibold text-[#7a5f2e]">{chip}</span>
+      <div className="mt-5 space-y-0">
+        {profile.routingChain.map((route, index) => (
+          <div key={route.role.en} className="relative grid grid-cols-[28px_minmax(0,1fr)] gap-3 pb-5 last:pb-0">
+            {index < profile.routingChain.length - 1 && <div className="absolute left-[13px] top-8 h-[calc(100%-1.5rem)] w-px bg-[#d9e1ea]" />}
+            <div className="relative z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[#cfd8e3] bg-white text-[11px] font-bold text-[#1d3550] shadow-sm">{index + 1}</div>
+            <div className="rounded-2xl border border-[#e2e8f0] bg-[#fbfcfe] p-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold text-[#132338]">{route.role[lang]}</h3>
+                <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${statusStyle[route.status]}`}>{copy[statusCopyKey[route.status]]}</span>
+              </div>
+              <p className="mt-2 text-xs font-medium leading-5 text-[#64748b]">{route.note[lang]}</p>
+            </div>
+          </div>
         ))}
       </div>
 
-      <div className="mt-5 space-y-4 rounded-2xl border border-[#e7dfd2] bg-white px-5 py-4">
-        <MemoSection title={copy.executiveSummary}>
-          <p className="text-sm leading-6 text-[#3f4a5a]">{response.executiveSummary[lang]}</p>
-        </MemoSection>
-        {previewSections.map((section, index) => (
-          <MemoSection key={`${section.key}-${section.heading.en}-${index}`} title={section.heading[lang]}>
-            {section.ordered ? (
-              <ol className="list-decimal space-y-1.5 pl-5 text-sm leading-6 text-[#536071]">
-                {section.items[lang].slice(0, 3).map((item) => <li key={item}>{item}</li>)}
-              </ol>
-            ) : (
-              <ul className="list-disc space-y-1.5 pl-5 text-sm leading-6 text-[#536071]">
-                {section.items[lang].slice(0, 3).map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            )}
-          </MemoSection>
-        ))}
-        <MemoSection title={copy.professionalReviewRequired}>
-          <p className="text-sm font-semibold leading-6 text-[#182230]">{response.reviewRequired[lang]}</p>
-        </MemoSection>
+      <div className="mt-5 rounded-2xl border border-[#d6bf83] bg-[#fffaf0] p-4">
+        <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#9a7b45]">{copy.disclaimer}</div>
+        <p className="mt-2 text-xs leading-5 text-[#52606f]">This is for internal client intake and advisor coordination only. It is not insurance quotation, legal, tax, medical, or investment advice.</p>
+        <p className="mt-2 text-xs leading-5 text-[#52606f]">仅用于内部客户接待与顾问协同；不构成保险报价、法律、税务、医疗或投资建议。</p>
       </div>
-
-      <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-[#e0d8ca] bg-[#f8fafc] p-3">
-        <p className="text-xs leading-5 text-[#667085]">{response.disclaimer?.[lang]}</p>
-        <button className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#536071] ring-1 ring-[#d7dee8]">{copy.viewFullBrief}</button>
-      </div>
-    </section>
-  );
-}
-
-function MemoMeta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-3 border-b border-[#f0ebe2] pb-2 last:border-b-0 last:pb-0">
-      <span className="text-[#8a6f3d]">{label}</span>
-      <span className="text-right font-medium text-[#182230]">{value}</span>
-    </div>
-  );
-}
-
-function MemoSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="border-b border-[#eee8dc] pb-4 last:border-b-0 last:pb-0">
-      <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#8a6f3d]">{title}</h3>
-      {children}
     </section>
   );
 }

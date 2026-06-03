@@ -1,18 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-  agentResponses,
-  agentRuns,
-  auditLogs,
-  dataRooms,
-  missingInformation,
-  prompts,
-  type Lang,
-  type PromptId,
-  type StepStatus,
-  uiCopy,
-} from "@/data/familyOfficeAgentMock";
+import { useState } from "react";
+import { auditLogs, clientFollowUpProfiles, dataRooms, missingInformation, prompts, type Lang, type PromptId, uiCopy } from "@/data/familyOfficeAgentMock";
+import { AgentCommandCenter } from "./AgentCommandCenter";
+import { AgentResultPanel } from "./AgentResultPanel";
+import { AgentRunStepper } from "./AgentRunStepper";
 import { AppShell } from "./AppShell";
 import { AuditLogTable } from "./AuditLogTable";
 import { DataRoomPanel } from "./DataRoomPanel";
@@ -21,89 +13,24 @@ import { MissingInformationPanel } from "./MissingInformationPanel";
 
 type TabId = "data" | "missing" | "approval" | "audit";
 
-type IntakeFieldKey =
-  | "clientType"
-  | "insuranceObjective"
-  | "productType"
-  | "jurisdiction"
-  | "familyMembersCovered"
-  | "existingPolicyStatus"
-  | "annualPremiumBudget";
-
-type RiskFlagKey = "medicalDisclosure" | "crossBorder" | "beneficiaryUpdate" | "renewalWindow";
-
-const insuranceIntakeFields: Array<{ key: IntakeFieldKey; options: Record<Lang, string[]> }> = [
-  { key: "clientType", options: { en: ["HNW Family", "Family Office", "Entrepreneur"], zh: ["高净值家族", "家族办公室", "企业家"] } },
-  { key: "insuranceObjective", options: { en: ["Family Protection", "Succession Liquidity", "Medical Coverage"], zh: ["家族保障", "传承流动性", "医疗保障"] } },
-  { key: "productType", options: { en: ["Life Insurance", "Critical Illness", "Medical / HNW"], zh: ["人寿保险", "重大疾病", "医疗 / 高端医疗"] } },
-  { key: "jurisdiction", options: { en: ["Hong Kong", "Singapore", "United States"], zh: ["香港", "新加坡", "美国"] } },
-  { key: "familyMembersCovered", options: { en: ["Principal + Spouse", "Two Generations", "Whole Family"], zh: ["负责人 + 配偶", "两代成员", "全家族"] } },
-  { key: "existingPolicyStatus", options: { en: ["No Existing Policy", "Partial Coverage", "Review Required"], zh: ["暂无现有保单", "部分配置", "需要复核"] } },
-  { key: "annualPremiumBudget", options: { en: ["Under $100k", "$100k - $500k", "$500k+"], zh: ["10 万美元以下", "10-50 万美元", "50 万美元以上"] } },
-];
-
-const riskFlagOptions: Array<{ key: RiskFlagKey; label: Record<Lang, string> }> = [
-  { key: "medicalDisclosure", label: { en: "Medical disclosure", zh: "健康告知" } },
-  { key: "crossBorder", label: { en: "Cross-border", zh: "跨境" } },
-  { key: "beneficiaryUpdate", label: { en: "Beneficiary update", zh: "受益人更新" } },
-  { key: "renewalWindow", label: { en: "Renewal window", zh: "续保窗口" } },
-];
-
-const reviewChipKeys: Record<
-  PromptId,
-  Array<"physicianReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">
-> = {
+const reviewChipKeys: Record<PromptId, Array<"physicianReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">> = {
   health: ["physicianReview", "familyPrincipalReview"],
   trust: ["legalReview", "taxReview", "investmentReview", "familyPrincipalReview"],
   meeting: ["physicianReview", "legalReview", "familyPrincipalReview"],
   weekly: ["physicianReview", "legalReview", "taxReview", "investmentReview", "familyPrincipalReview"],
 };
 
-const statusLabel: Record<Lang, Record<StepStatus, string>> = {
-  en: { Completed: "Done", "In Review": "Review", "Needs Human Approval": "Approval" },
-  zh: { Completed: "完成", "In Review": "复核", "Needs Human Approval": "确认" },
-};
-
-const statusClass: Record<StepStatus, string> = {
-  Completed: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  "In Review": "bg-blue-50 text-blue-700 ring-blue-100",
-  "Needs Human Approval": "bg-violet-50 text-violet-700 ring-violet-100",
-};
-
 export function FamilyOfficeAgentPage() {
   const [selectedPromptId, setSelectedPromptId] = useState<PromptId>("health");
-  const [lang, setLang] = useState<Lang>("zh");
+  const [lang, setLang] = useState<Lang>("en");
   const [runCount, setRunCount] = useState(1);
   const [isRunning, setIsRunning] = useState(false);
-  const [activeStepIndex, setActiveStepIndex] = useState(5);
+  const [activeStepIndex, setActiveStepIndex] = useState(3);
   const [activeTab, setActiveTab] = useState<TabId>("data");
-  const [intakeSelections, setIntakeSelections] = useState<Record<IntakeFieldKey, number>>({
-    clientType: 0,
-    insuranceObjective: 0,
-    productType: 0,
-    jurisdiction: 0,
-    familyMembersCovered: 0,
-    existingPolicyStatus: 1,
-    annualPremiumBudget: 1,
-  });
-  const [selectedRiskFlags, setSelectedRiskFlags] = useState<RiskFlagKey[]>(["beneficiaryUpdate", "crossBorder"]);
-
-  const copy = uiCopy[lang] as Record<string, string>;
-  const selectedPrompt = useMemo(
-    () => prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0],
-    [selectedPromptId],
-  );
-  const response = agentResponses[selectedPromptId];
-  const steps = agentRuns[selectedPromptId];
-  const reviewChips = response.memoReview?.[lang]
-    ? response.memoReview[lang]
-        .split(/[、/,]+/)
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [];
-  const runId = `#FO-RUN-${String(18 + runCount).padStart(3, "0")}`;
-  const executionMessages = [copy.classifyingRequest, copy.scanningRecords, copy.checkingMissing, copy.briefGenerated];
-
+  const copy = uiCopy[lang];
+  const selectedProfile = clientFollowUpProfiles[selectedPromptId];
+  const reviewChips = reviewChipKeys[selectedPromptId].map((key) => copy[key]);
+  const executionMessages = [copy.analyzingClientProfile, copy.checkingMissingInfo, copy.generatingFollowUpCard, copy.routingToAdvisors];
   const tabs: Array<{ id: TabId; label: string; count: number }> = [
     { id: "data", label: copy.dataRoomTab, count: dataRooms.filter((source) => source.promptIds.includes(selectedPromptId)).length },
     { id: "missing", label: copy.missingTab, count: missingInformation[selectedPromptId].length },
@@ -117,379 +44,78 @@ export function FamilyOfficeAgentPage() {
     setActiveStepIndex(0);
     setRunCount((count) => count + 1);
 
-    [1, 2, 3, 4, 5].forEach((step, index) => {
-      window.setTimeout(() => setActiveStepIndex(step), (index + 1) * 360);
+    [1, 2, 3].forEach((step, index) => {
+      window.setTimeout(() => setActiveStepIndex(step), (index + 1) * 420);
     });
-
     window.setTimeout(() => {
       setIsRunning(false);
-      setActiveStepIndex(5);
-    }, 2300);
+      setActiveStepIndex(3);
+    }, 1780);
   };
 
   const handleSelectPrompt = (promptId: PromptId) => {
     setSelectedPromptId(promptId);
-    setActiveStepIndex(5);
+    setActiveStepIndex(3);
     setRunCount((count) => count + 1);
-  };
-
-  const commandTitle =
-    lang === "zh" ? "你希望家族办公室 AI Agent 做什么？" : "What should the Family Office AI Agent do?";
-
-  const commandSubtitle =
-    lang === "zh"
-      ? "选择客户场景，Agent 自动整理模拟资料、识别顾问需求，并生成内部跟进卡。"
-      : "Select insurance needs. The Agent retrieves mock context, identifies protection gaps, and generates a review-ready brief.";
-
-  const briefSections = response.sections;
-
-  const handleIntakeChange = (key: IntakeFieldKey, value: string) => {
-    setIntakeSelections((current) => ({ ...current, [key]: Number(value) }));
-  };
-
-  const toggleRiskFlag = (key: RiskFlagKey) => {
-    setSelectedRiskFlags((current) =>
-      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
-    );
   };
 
   return (
     <AppShell>
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,#eef6ff_0,#f7f8fb_34%,#f4f4f1_100%)] text-slate-900">
-        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-2xl">
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-6 py-4">
+      <div className="min-h-screen bg-[#f6f8fb]">
+        <header className="sticky top-0 z-30 border-b border-[#dbe3ec] bg-white/90 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-5 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white shadow-lg shadow-slate-300/60">
-                FO
-              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#c9d7e5] bg-[#f7fafc] text-sm font-bold text-[#17324d]">FO</div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-semibold tracking-tight">{copy.product}</h1>
-                  <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
-                    {copy.executiveDemo}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-lg font-semibold text-[#182230]">{copy.product}</h1>
+                  <span className="rounded-full border border-[#d6bf83] bg-[#fffaf0] px-2.5 py-1 text-xs font-semibold text-[#7a5f2e]">{copy.executiveDemo}</span>
                 </div>
-                <p className="text-xs text-slate-500">{copy.commandCenter}</p>
+                <p className="text-xs text-[#667085]">{copy.commandCenter}</p>
               </div>
             </div>
-
-            <div className="flex items-center gap-2">
-              <div className="rounded-full bg-slate-100 p-1 ring-1 ring-slate-200">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="rounded-full border border-[#e0d8ca] bg-[#fbfaf6] p-1">
                 {(["en", "zh"] as Lang[]).map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => setLang(item)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      lang === item ? "bg-slate-950 text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
-                    }`}
-                  >
+                  <button key={item} onClick={() => setLang(item)} className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${lang === item ? "bg-[#182230] text-white" : "text-[#536071] hover:text-[#182230]"}`}>
                     {item === "en" ? "EN" : "中文"}
                   </button>
                 ))}
               </div>
-              <span className="hidden rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 sm:inline-flex">
-                {copy.mockDataOnly}
-              </span>
-              <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 sm:inline-flex">
-                {copy.noBackendConnected}
-              </span>
+              <span className="rounded-full bg-[#eef7f3] px-3 py-1.5 text-xs font-semibold text-[#1f6b5a]">{copy.mockDataOnly}</span>
+              <span className="rounded-full bg-[#f1f4f7] px-3 py-1.5 text-xs font-semibold text-[#536071]">{copy.noBackendConnected}</span>
+              <span className="rounded-full bg-[#fffaf0] px-3 py-1.5 text-xs font-semibold text-[#7a5f2e]">{copy.pendingReviews}</span>
             </div>
           </div>
         </header>
 
-        <main className="mx-auto max-w-[1440px] space-y-5 px-6 py-6">
-          <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_360px]">
-              <div>
-                <div className="mb-6">
-                  <p className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-blue-600">
-                    {copy.agentWorkspace}
-                  </p>
-                  <h2 className="text-4xl font-semibold tracking-tight text-slate-950">{commandTitle}</h2>
-                  <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">{commandSubtitle}</p>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                    <div className="min-w-0 flex-1 rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-slate-200">
-                      <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                        {copy.selectedTask}
-                      </p>
-                      <p className="text-base font-medium leading-7 text-slate-900">{selectedPrompt.command[lang]}</p>
-                    </div>
-                    <button
-                      disabled={isRunning}
-                      onClick={startMockRun}
-                      className="rounded-2xl bg-slate-950 px-7 py-4 text-base font-semibold text-white shadow-xl shadow-slate-300/70 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-                    >
-                      {isRunning ? copy.agentRunning : copy.runAgent}
-                    </button>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {prompts.map((prompt) => {
-                      const active = prompt.id === selectedPromptId;
-                      return (
-                        <button
-                          key={prompt.id}
-                          onClick={() => handleSelectPrompt(prompt.id)}
-                          className={`group rounded-2xl px-4 py-3 text-left transition ${
-                            active
-                              ? "bg-slate-950 text-white shadow-lg shadow-slate-300/60"
-                              : "bg-white text-slate-700 ring-1 ring-slate-200 hover:-translate-y-0.5 hover:ring-blue-200"
-                          }`}
-                        >
-                          <div className="text-sm font-semibold">{prompt.label[lang]}</div>
-                          <div className={`mt-1 text-xs ${active ? "text-slate-300" : "text-slate-500"}`}>
-                            {copy.riskQueue}: {prompt.riskCount} · {prompt.review[lang]}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="mt-5 rounded-[1.25rem] border border-slate-200 bg-white p-4 shadow-sm">
-                    <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">{copy.intakeTitle}</p>
-                        <p className="mt-1 text-sm text-slate-500">{copy.intakeSubtitle}</p>
-                      </div>
-                      <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                        {copy.mockDataOnly}
-                      </span>
-                    </div>
-
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      {insuranceIntakeFields.map((field) => (
-                        <label key={field.key} className="block rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                          <span className="text-xs font-semibold text-slate-500">{copy[field.key]}</span>
-                          <select
-                            value={intakeSelections[field.key]}
-                            onChange={(event) => handleIntakeChange(field.key, event.target.value)}
-                            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
-                          >
-                            {field.options[lang].map((option, index) => (
-                              <option key={option} value={index}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      ))}
-                    </div>
-
-                    <div className="mt-4">
-                      <p className="mb-2 text-xs font-semibold text-slate-500">{copy.riskFlags}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {riskFlagOptions.map((flag) => {
-                          const active = selectedRiskFlags.includes(flag.key);
-                          return (
-                            <button
-                              key={flag.key}
-                              type="button"
-                              onClick={() => toggleRiskFlag(flag.key)}
-                              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                                active
-                                  ? "bg-blue-600 text-white shadow-sm"
-                                  : "bg-slate-100 text-slate-600 ring-1 ring-slate-200 hover:bg-slate-200"
-                              }`}
-                            >
-                              {flag.label[lang]}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[1.5rem] border border-slate-200 bg-slate-950 p-5 text-white shadow-2xl shadow-slate-300/70">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-300">
-                      {copy.executionStatus}
-                    </p>
-                    <h3 className="mt-2 text-2xl font-semibold">{runId}</h3>
-                  </div>
-                  <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-emerald-200 ring-1 ring-white/15">
-                    {isRunning ? copy.agentRunning : copy.runCompletedShort}
-                  </span>
-                </div>
-
-                <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-blue-400 via-emerald-300 to-violet-300 transition-all duration-500"
-                    style={{ width: `${((activeStepIndex + 1) / steps.length) * 100}%` }}
-                  />
-                </div>
-
-                <div className="mt-5 space-y-2">
-                  {executionMessages.map((message, index) => (
-                    <div
-                      key={message}
-                      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
-                        isRunning && index === Math.min(activeStepIndex, executionMessages.length - 1)
-                          ? "bg-white/15 text-white"
-                          : "text-slate-300"
-                      }`}
-                    >
-                      <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                      {message}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 rounded-2xl bg-white/8 p-4 ring-1 ring-white/10">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                    {copy.runSummary}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-200">{selectedPrompt.runSummary[lang]}</p>
-                </div>
-              </div>
-            </div>
+        <main className="mx-auto max-w-[1680px] space-y-4 px-5 py-5">
+          <section className="grid gap-5 xl:grid-cols-[320px_minmax(680px,1.35fr)_360px]">
+            <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} profile={selectedProfile} />
+            <AgentRunStepper profile={selectedProfile} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
+            <AgentResultPanel profile={selectedProfile} lang={lang} copy={copy} />
           </section>
 
-          <section className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)]">
-            <div className="rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-600">
-                    {copy.workflowTitle}
-                  </p>
-                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{copy.workflowSubtitle}</h3>
-                </div>
-                <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                  {copy.runCompleted}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {steps.map((step, index) => {
-                  const highlighted = index <= activeStepIndex;
-                  return (
-                    <div
-                      key={`${step.name.en}-${index}`}
-                      className={`grid gap-4 rounded-2xl border p-4 transition md:grid-cols-[42px_minmax(0,1fr)_auto] md:items-center ${
-                        highlighted
-                          ? "border-blue-100 bg-gradient-to-r from-blue-50/80 to-white"
-                          : "border-slate-200 bg-white opacity-65"
-                      }`}
-                    >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-sm font-bold text-blue-700 shadow-sm ring-1 ring-blue-100">
-                        {index + 1}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-slate-950">{step.name[lang]}</h4>
-                        <p className="mt-1 text-sm text-slate-500">{step.detail[lang]}</p>
-                        <p className="mt-1 text-xs font-semibold text-blue-700">{step.metadata[lang]}</p>
-                      </div>
-                      <span className={`w-fit rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${statusClass[step.status]}`}>
-                        {statusLabel[lang][step.status]}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-              <div className="border-b border-slate-200 pb-5">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-blue-600">
-                  {copy.generatedBrief}
-                </p>
-                <h3 className="mt-2 text-2xl font-semibold text-slate-950">
-                  {copy.generatedBrief} {response.briefId}
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">{response.title[lang]}</p>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                <BriefMeta label={copy.preparedFor} value={response.preparedFor[lang]} />
-                <BriefMeta label={copy.preparedBy} value={response.preparedBy[lang]} />
-                <BriefMeta label={copy.review} value={response.memoReview[lang]} />
-                <BriefMeta label={copy.memoStatus} value={response.memoStatus[lang]} />
-              </div>
-
-              <div className="mt-5 rounded-2xl bg-slate-50 p-4">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-                  {copy.executiveSummary}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{response.executiveSummary[lang]}</p>
-              </div>
-
-              {briefSections.map((section) => (
-                <div key={section.key} className="mt-5">
-                  <h4 className="mb-2 text-sm font-semibold text-slate-950">{section.heading[lang]}</h4>
-                  <ul className="space-y-2 text-sm leading-6 text-slate-600">
-                    {section.items[lang].slice(0, 3).map((item) => (
-                      <li key={item} className="flex gap-2">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {reviewChips.map((chip) => (
-                  <span key={chip} className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700 ring-1 ring-violet-100">
-                    {chip}
-                  </span>
-                ))}
-              </div>
-
-              <p className="mt-5 rounded-2xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">
-                {response.disclaimer?.[lang]}
-              </p>
-            </div>
-          </section>
-
-          <section className="rounded-[2rem] border border-white/80 bg-white/85 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+          <section className="rounded-[1.75rem] border border-[#e0d8ca] bg-white p-4 shadow-[0_18px_50px_rgba(40,35,28,0.07)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#eee8dc] pb-3">
               <div className="flex flex-wrap gap-2">
                 {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                      activeTab === tab.id
-                        ? "bg-slate-950 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {tab.label}
-                    <span className="ml-1 opacity-70">{tab.count}</span>
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${activeTab === tab.id ? "bg-[#182230] text-white" : "bg-[#f6f4ef] text-[#536071] hover:bg-[#eee8dc]"}`}>
+                    {tab.label} <span className="ml-1 opacity-70">{tab.count}</span>
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-slate-500">{copy.safetyText}</p>
+              <p className="text-sm text-[#667085]">{copy.safetyText}</p>
             </div>
             <div className="pt-4">
-              {activeTab === "data" && (
-                <DataRoomPanel sources={dataRooms} selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />
-              )}
-              {activeTab === "missing" && (
-                <MissingInformationPanel items={missingInformation[selectedPromptId]} lang={lang} copy={copy} embedded />
-              )}
-              {activeTab === "approval" && (
-                <HumanApprovalPanel selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />
-              )}
+              {activeTab === "data" && <DataRoomPanel sources={dataRooms} selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />}
+              {activeTab === "missing" && <MissingInformationPanel items={missingInformation[selectedPromptId]} lang={lang} copy={copy} embedded />}
+              {activeTab === "approval" && <HumanApprovalPanel selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />}
               {activeTab === "audit" && <AuditLogTable lang={lang} copy={copy} embedded />}
             </div>
           </section>
         </main>
       </div>
     </AppShell>
-  );
-}
-
-function BriefMeta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl bg-slate-50 p-3">
-      <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-slate-900">{value}</div>
-    </div>
   );
 }
