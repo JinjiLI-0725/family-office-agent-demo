@@ -23,18 +23,37 @@ export function FamilyOfficeAgentPage() {
   const [selectedPromptId, setSelectedPromptId] = useState<PromptId>("health");
   const [lang, setLang] = useState<Lang>("en");
   const [runCount, setRunCount] = useState(1);
+  const [isRunning, setIsRunning] = useState(false);
+  const [activeStepIndex, setActiveStepIndex] = useState(3);
   const [activeTab, setActiveTab] = useState<TabId>("data");
   const copy = uiCopy[lang];
   const selectedPrompt = useMemo(() => prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0], [selectedPromptId]);
   const reviewChips = reviewChipKeys[selectedPromptId].map((key) => copy[key]);
+  const executionMessages = [copy.classifyingRequest, copy.scanningRecords, copy.checkingMissing, copy.briefGenerated];
   const tabs: Array<{ id: TabId; label: string; count: number }> = [
     { id: "data", label: copy.dataRoomTab, count: dataRooms.filter((source) => source.promptIds.includes(selectedPromptId)).length },
     { id: "missing", label: copy.missingTab, count: missingInformation[selectedPromptId].length },
     { id: "audit", label: copy.auditTab, count: auditLogs.length },
   ];
 
+  const startMockRun = () => {
+    if (isRunning) return;
+    setIsRunning(true);
+    setActiveStepIndex(0);
+    setRunCount((count) => count + 1);
+
+    [1, 2, 3].forEach((step, index) => {
+      window.setTimeout(() => setActiveStepIndex(step), (index + 1) * 420);
+    });
+    window.setTimeout(() => {
+      setIsRunning(false);
+      setActiveStepIndex(3);
+    }, 1780);
+  };
+
   const handleSelectPrompt = (promptId: PromptId) => {
     setSelectedPromptId(promptId);
+    setActiveStepIndex(3);
     setRunCount((count) => count + 1);
   };
 
@@ -50,7 +69,7 @@ export function FamilyOfficeAgentPage() {
                   <h1 className="text-lg font-semibold text-[#182230]">{copy.product}</h1>
                   <span className="rounded-full border border-[#d8bd80] bg-[#fff8e8] px-2.5 py-1 text-xs font-semibold text-[#7a5f2e]">{copy.executiveDemo}</span>
                 </div>
-                <p className="text-xs text-[#667085]">{copy.premiumThesis}</p>
+                <p className="text-xs text-[#667085]">{copy.commandCenter}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -63,14 +82,15 @@ export function FamilyOfficeAgentPage() {
               </div>
               <span className="rounded-full bg-[#eef7f3] px-3 py-1.5 text-xs font-semibold text-[#1f6b5a]">{copy.mockDataOnly}</span>
               <span className="rounded-full bg-[#f1f4f7] px-3 py-1.5 text-xs font-semibold text-[#536071]">{copy.noBackendConnected}</span>
+              <span className="rounded-full bg-[#fff8e8] px-3 py-1.5 text-xs font-semibold text-[#7a5f2e]">{copy.pendingReviews}</span>
             </div>
           </div>
         </header>
 
         <main className="mx-auto max-w-[1680px] space-y-4 px-5 py-5">
-          <section className="grid gap-4 xl:grid-cols-[320px_minmax(620px,1fr)_430px]">
+          <section className="grid gap-5 xl:grid-cols-[300px_minmax(700px,1.18fr)_430px]">
             <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} />
-            <AgentRunStepper steps={agentRuns[selectedPromptId]} selectedPrompt={selectedPrompt} lang={lang} copy={copy} runCount={runCount} onRun={() => setRunCount((count) => count + 1)} />
+            <AgentRunStepper steps={agentRuns[selectedPromptId]} selectedPrompt={selectedPrompt} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
             <AgentResultPanel response={agentResponses[selectedPromptId]} lang={lang} copy={copy} reviewChips={reviewChips} />
           </section>
 

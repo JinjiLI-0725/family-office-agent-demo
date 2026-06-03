@@ -27,7 +27,7 @@ The main UI copy, sample scenarios, Agent run trace, generated deliverables, dat
 
 ## Interaction model
 
-The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, and Audit Log. The workflow is structured as:
+The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, and Audit Log. The Run Agent button uses mock local state to show a short execution sequence before returning to completed state. The workflow is structured as:
 
 1. Select an executive family office scenario.
 2. Review the selected Agent task.

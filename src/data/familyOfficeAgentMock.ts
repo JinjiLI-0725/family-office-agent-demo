@@ -42,6 +42,11 @@ export type AgentResponseSection = {
 
 export type AgentResponse = {
   title: Localized;
+  briefId: string;
+  preparedFor: Localized;
+  preparedBy: Localized;
+  memoReview: Localized;
+  memoStatus: Localized;
   executiveSummary: Localized;
   reviewRequired: Localized;
   disclaimer?: Localized;
@@ -88,7 +93,23 @@ export const uiCopy = {
     executiveDemo: "Executive Demo",
     mockData: "Mock Data",
     noBackend: "No Backend Connected",
-    pendingReviews: "9 pending review items",
+    pendingReviews: "Pending Review Items: 9",
+    commandCenter: "Agent Command Center",
+    mainValue: "This Agent can execute a family office task and generate a professional brief.",
+    scenarioTitle: "Scenario title",
+    riskQueueCount: "Risk Queue",
+    reviewRequiredStatus: "Review Required",
+    agentRunning: "Agent running...",
+    runCompletedShort: "Run completed",
+    executionStatus: "Execution status",
+    classifyingRequest: "Classifying request...",
+    scanningRecords: "Scanning records...",
+    checkingMissing: "Checking missing information...",
+    briefGenerated: "Brief generated.",
+    preparedFor: "Prepared for",
+    preparedBy: "Prepared by",
+    memoStatus: "Status",
+    draftForReview: "Draft for Professional Review",
     scenarioSelector: "Executive Workflows",
     scenarioLibrary: "Scenario Library",
     agentWorkspace: "Agent Workspace",
@@ -162,7 +183,23 @@ export const uiCopy = {
     executiveDemo: "高管演示",
     mockData: "模拟数据",
     noBackend: "未连接后端",
-    pendingReviews: "9 项待复核事项",
+    pendingReviews: "待复核事项：9",
+    commandCenter: "Agent 指挥中心",
+    mainValue: "这个 Agent 可以执行家族办公室任务，并生成专业复核材料。",
+    scenarioTitle: "场景名称",
+    riskQueueCount: "风险队列",
+    reviewRequiredStatus: "需要复核",
+    agentRunning: "Agent 运行中...",
+    runCompletedShort: "运行完成",
+    executionStatus: "执行状态",
+    classifyingRequest: "正在识别任务...",
+    scanningRecords: "正在扫描资料...",
+    checkingMissing: "正在检查缺失信息...",
+    briefGenerated: "简报已生成。",
+    preparedFor: "对象",
+    preparedBy: "生成方",
+    memoStatus: "状态",
+    draftForReview: "专业复核草稿",
     scenarioSelector: "可执行工作流",
     scenarioLibrary: "场景库",
     agentWorkspace: "Agent 工作台",
@@ -286,6 +323,11 @@ export const agentRuns: Record<PromptId, AgentRunStep[]> = {
 export const agentResponses: Record<PromptId, AgentResponse> = {
   health: {
     title: { en: "Family Health & Genetic Risk Review", zh: "家族健康与遗传风险复核" },
+    briefId: "#FO-2026-001",
+    preparedFor: { en: "Family Principal", zh: "家族负责人" },
+    preparedBy: { en: "Family Office AI Agent", zh: "家族办公室 AI Agent" },
+    memoReview: { en: "Physician / Genetic Counselor", zh: "医生 / 遗传咨询师" },
+    memoStatus: { en: "Draft for Professional Review", zh: "专业复核草稿" },
     executiveSummary: { en: "The Agent organized recent mock health and genetic-risk materials into a physician-review packet, flagged missing annual coverage, and prepared communication support without drawing medical conclusions.", zh: "Agent 将近期模拟健康与遗传风险资料整理为医生复核材料包，提示年度体检覆盖缺口，并准备沟通辅助材料，不作医学结论。" },
     reviewRequired: { en: "Physician / Genetic Counselor Review", zh: "医生 / 遗传咨询师复核" },
     disclaimer: { en: "This output is for information organization and communication preparation only. It does not constitute medical diagnosis. All medical conclusions must be reviewed by a physician or genetic counselor.", zh: "以下内容仅用于资料整理和沟通准备，不构成医疗诊断。所有医学结论必须由医生或遗传咨询师复核。" },
@@ -297,6 +339,11 @@ export const agentResponses: Record<PromptId, AgentResponse> = {
   },
   trust: {
     title: { en: "Asset & Trust Document Review", zh: "资产与信托文件复核" },
+    briefId: "#FO-2026-002",
+    preparedFor: { en: "Family Principal", zh: "家族负责人" },
+    preparedBy: { en: "Family Office AI Agent", zh: "家族办公室 AI Agent" },
+    memoReview: { en: "Legal / Tax / Investment Advisors", zh: "律师 / 税务顾问 / 投资顾问" },
+    memoStatus: { en: "Draft for Professional Review", zh: "专业复核草稿" },
     executiveSummary: { en: "The Agent reviewed mock asset, insurance, property, and trust records to identify document-maintenance risks and prepare a counsel-ready checklist.", zh: "Agent 复核模拟资产、保险、房产和信托资料，识别文件维护风险，并准备律师复核清单。" },
     reviewRequired: { en: "Legal Counsel, Tax Advisor, and Investment Advisor Review", zh: "律师、税务顾问和投资顾问复核" },
     disclaimer: { en: "This output is for document organization and risk flagging only. It does not constitute legal, tax, or investment advice.", zh: "以下内容仅用于文件整理和风险提示，不构成法律、税务或投资建议。" },
@@ -308,6 +355,11 @@ export const agentResponses: Record<PromptId, AgentResponse> = {
   },
   meeting: {
     title: { en: "Family Meeting Brief Preparation", zh: "家族会议材料准备" },
+    briefId: "#FO-2026-003",
+    preparedFor: { en: "Family Principal", zh: "家族负责人" },
+    preparedBy: { en: "Family Office AI Agent", zh: "家族办公室 AI Agent" },
+    memoReview: { en: "Family Principal / Advisors", zh: "家族负责人 / 顾问" },
+    memoStatus: { en: "Draft for Professional Review", zh: "专业复核草稿" },
     executiveSummary: { en: "The Agent assembled a cross-domain family meeting packet with risk topics, agenda structure, generated materials, and post-meeting ownership cues.", zh: "Agent 整合跨领域家族会议资料包，包含风险议题、会议议程、生成文件和会后任务归属。" },
     reviewRequired: { en: "Family Principal and Relevant Advisor Approval", zh: "家族负责人及相关顾问确认" },
     sections: [
@@ -318,6 +370,11 @@ export const agentResponses: Record<PromptId, AgentResponse> = {
   },
   weekly: {
     title: { en: "Weekly Family Office Risk Summary", zh: "本周家族办公室风险事项总结" },
+    briefId: "#FO-2026-004",
+    preparedFor: { en: "Family Principal", zh: "家族负责人" },
+    preparedBy: { en: "Family Office AI Agent", zh: "家族办公室 AI Agent" },
+    memoReview: { en: "Family Principal / Multi-advisor Review", zh: "家族负责人 / 多顾问复核" },
+    memoStatus: { en: "Draft for Professional Review", zh: "专业复核草稿" },
     executiveSummary: { en: "The Agent consolidated this week’s mock family office risks into priority bands and suggested advisor confirmations for the family office manager.", zh: "Agent 将本周模拟家族办公室风险事项按优先级整理，并建议家办经理安排专业人士确认。" },
     reviewRequired: { en: "Physician, Legal Counsel, Tax Advisor, Investment Advisor, and Family Principal Review", zh: "医生、律师、税务顾问、投资顾问和家族负责人复核" },
     sections: [
