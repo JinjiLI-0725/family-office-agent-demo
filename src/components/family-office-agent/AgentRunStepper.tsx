@@ -1,38 +1,39 @@
 import type { AgentRunStep, StepStatus } from "@/data/familyOfficeAgentMock";
 
 const statusStyles: Record<StepStatus, string> = {
-  Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  "In Review": "bg-amber-50 text-amber-700 ring-amber-200",
-  "Needs Human Approval": "bg-slate-100 text-slate-700 ring-slate-300",
+  Completed: "bg-emerald-500/10 text-emerald-700 ring-emerald-200",
+  "In Review": "bg-gold/15 text-amber-800 ring-gold/30",
+  "Needs Human Approval": "bg-slate-900 text-white ring-slate-900",
 };
 
 export function AgentRunStepper({ steps }: { steps: AgentRunStep[] }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-premium">
+    <section className="rounded-[1.6rem] border border-slate-200 bg-[#0b1522] p-4 text-white shadow-premium">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Agent Run Trace</p>
-          <h2 className="mt-2 text-xl font-semibold text-navy">Structured workflow execution</h2>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">Agent Run Trace</p>
+          <h2 className="mt-1 text-xl font-semibold">Execution timeline</h2>
         </div>
-        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Agent analysis completed</span>
+        <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">Run completed</span>
       </div>
-      <div className="mt-6 space-y-4">
+      <div className="mt-4 space-y-2.5">
         {steps.map((step, index) => (
-          <div key={step.name} className="relative flex gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-            <div className="flex flex-col items-center">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-sm font-semibold text-white ring-4 ring-white">{index + 1}</div>
-              {index < steps.length - 1 && <div className="mt-2 h-full min-h-8 w-px bg-slate-200" />}
+          <article key={step.name} className="grid grid-cols-[34px_minmax(0,1fr)] gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+            <div className="relative flex justify-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gold/40 bg-gold/15 text-xs font-semibold text-gold">{index + 1}</div>
+              {index < steps.length - 1 && <div className="absolute top-9 h-8 w-px bg-gradient-to-b from-gold/50 to-transparent" />}
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="font-semibold text-slate-900">{step.name}</h3>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusStyles[step.status]}`}>{step.status}</span>
+                <h3 className="text-sm font-semibold text-white">{step.name}</h3>
+                <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ring-1 ${statusStyles[step.status]}`}>{step.status}</span>
               </div>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{step.detail}</p>
+              <p className="mt-1 text-xs leading-5 text-slate-300">{step.detail}</p>
+              <div className="mt-2 inline-flex rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-300">{step.metadata}</div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,6 +1,6 @@
 # Family Office AI Agent Demo
 
-A standalone front-end demo for a **Family Office AI Agent** command center. The demo presents a private banking / enterprise SaaS style workflow where a user gives the Agent a family office task and the interface shows an executable agent run: classification, context retrieval, missing information checks, risk summary generation, action recommendations, and professional review requirements.
+A standalone front-end demo for a **Family Office Agent Command Center**. The demo is designed to feel like an executable agent workflow: a family office manager selects or enters a task, runs the Agent, and sees classification, private data-room retrieval, missing-information checks, risk flagging, generated professional-review materials, approvals, and audit activity.
 
 ## Demo purpose
 
@@ -15,6 +15,16 @@ This project is designed for boss/client presentations. It demonstrates how a fa
 - Family governance records
 - Privacy controls and audit logs
 - Philanthropy and impact projects
+
+## Interaction model
+
+The page is intentionally not a static dashboard. The first screen centers on a three-column command workflow:
+
+- Scenario selector with four sample family office tasks
+- Agent task runner with a visible Run Agent button and execution trace
+- Context panel showing retrieved mock records, missing information, and required professional approvals
+
+Clicking a different sample task updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
 
 ## Important data and advice notice
 
