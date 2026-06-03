@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { agentResponses, agentRuns, auditLogs, dataRooms, domains, missingInformation, prompts, approvalItems, type AgentResponse, type AgentResponseSection, type AgentRunStep, type ApprovalItem, type DataRoomSource, type Domain, type Lang, type MissingInformationItem, type Priority, type Prompt, type PromptId, uiCopy } from "@/data/familyOfficeAgentMock";
+import { agentResponses,
+  clientFollowUpProfiles, agentRuns, auditLogs, dataRooms, domains, missingInformation, prompts, approvalItems, type AgentResponse, type AgentResponseSection, type AgentRunStep, type ApprovalItem, type DataRoomSource, type Domain, type Lang, type MissingInformationItem, type Priority, type Prompt, type PromptId, uiCopy } from "@/data/familyOfficeAgentMock";
 import { AgentCommandCenter } from "./AgentCommandCenter";
 import { AgentResultPanel } from "./AgentResultPanel";
 import { AgentRunStepper } from "./AgentRunStepper";
@@ -32,6 +33,7 @@ export function FamilyOfficeAgentPage() {
   const copy = uiCopy[lang];
   const selectedPrompt = useMemo(() => prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0], [selectedPromptId]);
   const response = agentResponses[selectedPromptId];
+  const selectedProfile = clientFollowUpProfiles[selectedPromptId];
   const activeDataRooms = dataRooms.filter((source) => source.promptIds.includes(selectedPromptId));
   const activeDomains = domains.filter((domain) => selectedPrompt.activeDomainIds.includes(domain.id));
   const activeMissingInformation = missingInformation[selectedPromptId];
@@ -123,9 +125,9 @@ export function FamilyOfficeAgentPage() {
           />
 
           <section className="hidden gap-5 lg:grid lg:grid-cols-[250px_minmax(760px,1.35fr)_390px]">
-            <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} />
-            <AgentRunStepper steps={agentRuns[selectedPromptId]} selectedPrompt={selectedPrompt} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
-            <AgentResultPanel response={response} lang={lang} copy={copy} reviewChips={reviewChips} />
+            <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} profile={selectedProfile} />
+            <AgentRunStepper profile={selectedProfile} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
+            <AgentResultPanel profile={selectedProfile} lang={lang} copy={copy} />
           </section>
 
           <section className="hidden rounded-[1.75rem] border border-[#e0d8ca] bg-white p-4 shadow-[0_18px_50px_rgba(40,35,28,0.07)] lg:block">
