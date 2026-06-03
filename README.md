@@ -1,6 +1,6 @@
-# Family Office AI Agent Demo
+# Family Office Insurance Agent Demo
 
-A standalone bilingual front-end demo for a premium **Family Office Agent Command Center**. The demo uses a light, application-like workflow screen rather than a long landing page: a family office manager selects a scenario, runs the Agent, reviews the execution trace, and reads a generated professional-review brief.
+A standalone bilingual front-end demo for a premium **Family Office Insurance Agent Command Center**. The demo uses a light, application-like workflow screen rather than a long landing page: a family office insurance advisor selects a scenario, completes mock insurance intake, runs the Agent, reviews the execution trace, and reads a generated advisor-review brief.
 
 ## Demo purpose
 
@@ -42,9 +42,9 @@ Clicking a different scenario updates the active domains, agent run trace, gener
 
 All data in this repository is **mock demo data only**. The project does not use real family data, real health data, real asset data, real legal documents, API keys, or private documents.
 
-The demo output is supporting material for document organization, communication preparation, risk flagging, and professional review. It is **not medical, legal, tax, or investment advice** and does not replace physicians, genetic counselors, lawyers, tax advisors, investment advisors, or other professional reviewers.
+The demo output is for insurance planning support and advisor review only. It does not constitute legal, tax, medical, or investment advice and does not replace qualified professional reviewers.
 
-中文说明：本项目仅使用模拟数据，未连接真实后端。生成内容仅作为资料整理、沟通准备、风险提示和专业复核辅助材料，不构成医疗、法律、税务或投资建议。
+中文说明：本项目仅使用模拟数据，未连接真实后端。以下内容仅用于保险规划辅助和顾问复核，不构成法律、税务、医疗或投资建议。
 
 ## How to run locally
 

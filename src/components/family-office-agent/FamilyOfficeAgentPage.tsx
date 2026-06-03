@@ -21,6 +21,34 @@ import { MissingInformationPanel } from "./MissingInformationPanel";
 
 type TabId = "data" | "missing" | "approval" | "audit";
 
+type IntakeFieldKey =
+  | "clientType"
+  | "insuranceObjective"
+  | "productType"
+  | "jurisdiction"
+  | "familyMembersCovered"
+  | "existingPolicyStatus"
+  | "annualPremiumBudget";
+
+type RiskFlagKey = "medicalDisclosure" | "crossBorder" | "beneficiaryUpdate" | "renewalWindow";
+
+const insuranceIntakeFields: Array<{ key: IntakeFieldKey; options: Record<Lang, string[]> }> = [
+  { key: "clientType", options: { en: ["HNW Family", "Family Office", "Entrepreneur"], zh: ["高净值家族", "家族办公室", "企业家"] } },
+  { key: "insuranceObjective", options: { en: ["Family Protection", "Succession Liquidity", "Medical Coverage"], zh: ["家族保障", "传承流动性", "医疗保障"] } },
+  { key: "productType", options: { en: ["Life Insurance", "Critical Illness", "Medical / HNW"], zh: ["人寿保险", "重大疾病", "医疗 / 高端医疗"] } },
+  { key: "jurisdiction", options: { en: ["Hong Kong", "Singapore", "United States"], zh: ["香港", "新加坡", "美国"] } },
+  { key: "familyMembersCovered", options: { en: ["Principal + Spouse", "Two Generations", "Whole Family"], zh: ["负责人 + 配偶", "两代成员", "全家族"] } },
+  { key: "existingPolicyStatus", options: { en: ["No Existing Policy", "Partial Coverage", "Review Required"], zh: ["暂无现有保单", "部分配置", "需要复核"] } },
+  { key: "annualPremiumBudget", options: { en: ["Under $100k", "$100k - $500k", "$500k+"], zh: ["10 万美元以下", "10-50 万美元", "50 万美元以上"] } },
+];
+
+const riskFlagOptions: Array<{ key: RiskFlagKey; label: Record<Lang, string> }> = [
+  { key: "medicalDisclosure", label: { en: "Medical disclosure", zh: "健康告知" } },
+  { key: "crossBorder", label: { en: "Cross-border", zh: "跨境" } },
+  { key: "beneficiaryUpdate", label: { en: "Beneficiary update", zh: "受益人更新" } },
+  { key: "renewalWindow", label: { en: "Renewal window", zh: "续保窗口" } },
+];
+
 const reviewChipKeys: Record<
   PromptId,
   Array<"physicianReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">
@@ -49,6 +77,16 @@ export function FamilyOfficeAgentPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [activeStepIndex, setActiveStepIndex] = useState(5);
   const [activeTab, setActiveTab] = useState<TabId>("data");
+  const [intakeSelections, setIntakeSelections] = useState<Record<IntakeFieldKey, number>>({
+    clientType: 0,
+    insuranceObjective: 0,
+    productType: 0,
+    jurisdiction: 0,
+    familyMembersCovered: 0,
+    existingPolicyStatus: 1,
+    annualPremiumBudget: 1,
+  });
+  const [selectedRiskFlags, setSelectedRiskFlags] = useState<RiskFlagKey[]>(["beneficiaryUpdate", "crossBorder"]);
 
   const copy = uiCopy[lang];
   const selectedPrompt = useMemo(
@@ -91,16 +129,24 @@ export function FamilyOfficeAgentPage() {
   };
 
   const commandTitle =
-    lang === "zh" ? "你希望家族办公室 Agent 做什么？" : "What should the Family Office Agent do?";
+    lang === "zh" ? "你希望家族办公室保险 Agent 做什么？" : "What should the Family Office Insurance Agent do?";
 
   const commandSubtitle =
     lang === "zh"
-      ? "输入任务，Agent 自动检索资料、识别缺口、生成复核简报。"
-      : "Give the Agent a task. It retrieves context, identifies gaps, and generates a review-ready brief.";
+      ? "选择保险需求，Agent 自动检索模拟资料、识别保障缺口、生成复核简报。"
+      : "Select insurance needs. The Agent retrieves mock context, identifies protection gaps, and generates a review-ready brief.";
 
-  const briefSections = response.sections.filter((section) =>
-    ["findings", "actions", "nextSteps", "agenda"].includes(section.key),
-  );
+  const briefSections = response.sections;
+
+  const handleIntakeChange = (key: IntakeFieldKey, value: string) => {
+    setIntakeSelections((current) => ({ ...current, [key]: Number(value) }));
+  };
+
+  const toggleRiskFlag = (key: RiskFlagKey) => {
+    setSelectedRiskFlags((current) =>
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
+    );
+  };
 
   return (
     <AppShell>
@@ -195,6 +241,60 @@ export function FamilyOfficeAgentPage() {
                         </button>
                       );
                     })}
+                  </div>
+
+                  <div className="mt-5 rounded-[1.25rem] border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">{copy.intakeTitle}</p>
+                        <p className="mt-1 text-sm text-slate-500">{copy.intakeSubtitle}</p>
+                      </div>
+                      <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                        {copy.mockDataOnly}
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                      {insuranceIntakeFields.map((field) => (
+                        <label key={field.key} className="block rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                          <span className="text-xs font-semibold text-slate-500">{copy[field.key]}</span>
+                          <select
+                            value={intakeSelections[field.key]}
+                            onChange={(event) => handleIntakeChange(field.key, event.target.value)}
+                            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+                          >
+                            {field.options[lang].map((option, index) => (
+                              <option key={option} value={index}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+
+                    <div className="mt-4">
+                      <p className="mb-2 text-xs font-semibold text-slate-500">{copy.riskFlags}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {riskFlagOptions.map((flag) => {
+                          const active = selectedRiskFlags.includes(flag.key);
+                          return (
+                            <button
+                              key={flag.key}
+                              type="button"
+                              onClick={() => toggleRiskFlag(flag.key)}
+                              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                                active
+                                  ? "bg-blue-600 text-white shadow-sm"
+                                  : "bg-slate-100 text-slate-600 ring-1 ring-slate-200 hover:bg-slate-200"
+                              }`}
+                            >
+                              {flag.label[lang]}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -313,7 +413,7 @@ export function FamilyOfficeAgentPage() {
                 <p className="mt-2 text-sm leading-6 text-slate-700">{response.executiveSummary[lang]}</p>
               </div>
 
-              {briefSections.slice(0, 2).map((section) => (
+              {briefSections.map((section) => (
                 <div key={section.key} className="mt-5">
                   <h4 className="mb-2 text-sm font-semibold text-slate-950">{section.heading[lang]}</h4>
                   <ul className="space-y-2 text-sm leading-6 text-slate-600">
