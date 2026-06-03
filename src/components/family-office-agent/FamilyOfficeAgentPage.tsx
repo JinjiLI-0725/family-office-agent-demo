@@ -13,11 +13,11 @@ import { MissingInformationPanel } from "./MissingInformationPanel";
 
 type TabId = "data" | "missing" | "approval" | "audit";
 
-const reviewChipKeys: Record<PromptId, Array<"physicianReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">> = {
-  health: ["physicianReview", "familyPrincipalReview"],
-  trust: ["legalReview", "taxReview", "investmentReview", "familyPrincipalReview"],
-  meeting: ["physicianReview", "legalReview", "familyPrincipalReview"],
-  weekly: ["physicianReview", "legalReview", "taxReview", "investmentReview", "familyPrincipalReview"],
+const reviewChipKeys: Record<PromptId, Array<"insuranceAdvisorReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">> = {
+  health: ["familyPrincipalReview", "insuranceAdvisorReview", "taxReview"],
+  trust: ["insuranceAdvisorReview", "familyPrincipalReview"],
+  meeting: ["legalReview", "taxReview", "insuranceAdvisorReview", "familyPrincipalReview"],
+  weekly: ["familyPrincipalReview", "insuranceAdvisorReview", "legalReview", "taxReview", "investmentReview"],
 };
 
 export function FamilyOfficeAgentPage() {

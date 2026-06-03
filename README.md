@@ -1,20 +1,19 @@
-# Family Office AI Agent Demo
+# Family Office Client Intake Agent Demo
 
-A standalone bilingual front-end demo for a premium **Family Office Agent Command Center**. The demo uses a light, application-like workflow screen rather than a long landing page: a family office manager selects a scenario, runs the Agent, reviews the execution trace, and reads a generated professional-review brief.
+A standalone bilingual front-end demo for a **Family Office Client Intake Agent** / **家族办公室客户引进 Agent**. The demo uses a light, application-like workflow screen rather than a long landing page: a relationship manager or business development user selects a referral scenario, runs the Agent, reviews the execution trace, and reads a generated internal Client Intake Card.
 
 ## Demo purpose
 
-This project is designed for boss/client presentations. It demonstrates how a family office could use an AI-assisted workflow layer to organize and summarize private family office information across:
+This project is designed for boss/client presentations. It demonstrates how a family office with an insurance business line could use an AI-assisted internal intake workflow to capture prospective family client context, identify advisory needs, and generate a referral card for coordinated advisor follow-up across:
 
-- Family members
-- Health records and genetic risk information
-- Asset documents
-- Legal and succession documents
-- Tax and residency information
-- Education and next-generation development plans
-- Family governance records
-- Privacy controls and audit logs
-- Philanthropy and impact projects
+- Client source and relationship context
+- Client type and family background
+- Family office setup and governance needs
+- Wealth succession, trust, and estate coordination
+- Cross-border identity, tax, and residency context
+- Education and philanthropy planning
+- Insurance-related needs such as policy review, beneficiary arrangement, and renewal follow-up
+- Internal routing, missing information, advisor review, and audit logs
 
 ## Bilingual support
 
@@ -27,24 +26,24 @@ The main UI copy, sample scenarios, Agent run trace, generated deliverables, dat
 
 ## Interaction model
 
-The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, Approval Routing, and Audit Log. The Run Agent button uses mock local state to show a short execution sequence before returning to completed state. The workflow is structured as:
+The page is intentionally not a static dashboard. The main screen remains organized as a compact workspace with a Scenario Library, Intake Workspace, Output & Advisor Review panel, and compact secondary tabs for Intake Fields, Missing Information, Internal Routing, and Audit Log. This is not an insurance quotation system: it does not generate prices, premiums, or product recommendations. The Run Agent button uses mock local state to show a short execution sequence before returning to completed state. The workflow is structured as:
 
-1. Select an executive family office scenario.
-2. Review the selected Agent task.
-3. Click **Run Agent** / **运行 Agent**.
+1. Select a family office client intake or referral scenario.
+2. Review the selected intake task.
+3. Click **Generate Card** / **生成卡片**.
 4. Read the full-width Agent execution trace.
-5. Review the generated executive brief and professional-review requirements.
-6. Open supporting details only when needed from the tabbed secondary panel: data-room context, missing information, approval routing, and audit logs.
+5. Review the generated Client Intake Card / 内部转介卡 and advisor-review requirements.
+6. Open supporting details only when needed from the tabbed secondary panel: intake fields, missing information, internal routing, and audit logs.
 
-Clicking a different scenario updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
+Clicking a different scenario updates the active advisory areas, agent run trace, generated deliverable, intake-field context, missing-information queue, and routing requirements.
 
 ## Important data and advice notice
 
 All data in this repository is **mock demo data only**. The project does not use real family data, real health data, real asset data, real legal documents, API keys, or private documents.
 
-The demo output is supporting material for document organization, communication preparation, risk flagging, and professional review. It is **not medical, legal, tax, or investment advice** and does not replace physicians, genetic counselors, lawyers, tax advisors, investment advisors, or other professional reviewers.
+The demo output is supporting material for internal client intake, advisory needs organization, relationship-manager follow-up, and advisor coordination. It is **not an insurance quotation**, does not generate insurance pricing, premiums, or formal product proposals, and is **not legal, tax, medical, or investment advice**. It does not replace insurer quotation systems or professional reviewers.
 
-中文说明：本项目仅使用模拟数据，未连接真实后端。生成内容仅作为资料整理、沟通准备、风险提示和专业复核辅助材料，不构成医疗、法律、税务或投资建议。
+中文说明：本项目仅使用模拟数据，未连接真实后端。生成内容仅用于内部客户引进、需求整理、客户经理跟进和顾问协作，不构成保险报价、法律、税务、医疗或投资建议，也不替代保险公司报价系统或专业顾问复核。
 
 ## How to run locally
 
