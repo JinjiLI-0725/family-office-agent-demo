@@ -1,6 +1,6 @@
 # Family Office AI Agent Demo
 
-A standalone front-end demo for a **Family Office Agent Command Center**. The demo is designed to feel like an executable agent workflow: a family office manager selects or enters a task, runs the Agent, and sees classification, private data-room retrieval, missing-information checks, risk flagging, generated professional-review materials, approvals, and audit activity.
+A standalone bilingual front-end demo for a premium **Family Office Agent Command Center**. The demo is designed to feel like an executable agent workflow rather than a static document dashboard: a family office manager selects a task, runs the Agent, and sees classification, private data-room retrieval, missing-information checks, risk flagging, generated professional-review materials, approvals, and audit activity.
 
 ## Demo purpose
 
@@ -16,21 +16,35 @@ This project is designed for boss/client presentations. It demonstrates how a fa
 - Privacy controls and audit logs
 - Philanthropy and impact projects
 
+## Bilingual support
+
+The demo includes a local language toggle in the top bar:
+
+- English (`EN`)
+- Simplified Chinese (`中文`)
+
+The main UI copy, sample scenarios, Agent run trace, generated deliverables, data-room context, missing-information queue, approval requirements, audit log, and safety disclaimers switch language with local component state only. No backend or i18n service is required.
+
 ## Interaction model
 
-The page is intentionally not a static dashboard. The first screen centers on a three-column command workflow:
+The page is intentionally not a static dashboard. The workflow is structured as:
 
-- Scenario selector with four sample family office tasks
-- Agent task runner with a visible Run Agent button and execution trace
-- Context panel showing retrieved mock records, missing information, and required professional approvals
+1. Select an executive family office scenario.
+2. Review the selected Agent task.
+3. Click **Run Agent** / **运行 Agent**.
+4. Read the full-width Agent execution trace.
+5. Review the generated executive brief and professional-review requirements.
+6. Inspect retrieved mock data-room context, missing information, approval routing, and audit logs.
 
-Clicking a different sample task updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
+Clicking a different scenario updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
 
 ## Important data and advice notice
 
 All data in this repository is **mock demo data only**. The project does not use real family data, real health data, real asset data, real legal documents, API keys, or private documents.
 
 The demo output is supporting material for document organization, communication preparation, risk flagging, and professional review. It is **not medical, legal, tax, or investment advice** and does not replace physicians, genetic counselors, lawyers, tax advisors, investment advisors, or other professional reviewers.
+
+中文说明：本项目仅使用模拟数据，未连接真实后端。生成内容仅作为资料整理、沟通准备、风险提示和专业复核辅助材料，不构成医疗、法律、税务或投资建议。
 
 ## How to run locally
 
@@ -44,6 +58,12 @@ Start the development server:
 
 ```bash
 npm run dev
+```
+
+Run lint:
+
+```bash
+npm run lint
 ```
 
 Build for production:

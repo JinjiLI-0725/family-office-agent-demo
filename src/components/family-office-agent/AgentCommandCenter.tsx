@@ -1,59 +1,50 @@
-import type { Prompt, PromptId } from "@/data/familyOfficeAgentMock";
+import type { Lang, Prompt, PromptId } from "@/data/familyOfficeAgentMock";
 import { PromptButton } from "./PromptButton";
 
-export function AgentCommandCenter({ prompts, selectedPromptId, command, onSelect, onRun }: { prompts: Prompt[]; selectedPromptId: PromptId; command: string; onSelect: (id: PromptId) => void; onRun: () => void }) {
-  const selectedPrompt = prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0];
-
+export function AgentCommandCenter({ prompts, selectedPrompt, selectedPromptId, lang, copy, onSelect, onRun }: { prompts: Prompt[]; selectedPrompt: Prompt; selectedPromptId: PromptId; lang: Lang; copy: Record<string, string>; onSelect: (id: PromptId) => void; onRun: () => void }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <section className="rounded-[1.6rem] border border-white/10 bg-navy p-4 shadow-premium">
-        <div className="flex items-center justify-between">
+    <section className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
+      <div className="rounded-[2rem] border border-[#d8d1c4] bg-[#fbf8f1]/90 p-6 shadow-[0_28px_80px_rgba(44,37,29,0.10)]">
+        <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Scenario Selector</p>
-            <h2 className="mt-1 text-lg font-semibold text-white">Sample tasks</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9a7b45]">{copy.scenarioSelector}</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#101b2a]">{copy.tagline}</h2>
+            <p className="mt-2 text-sm text-slate-600">{copy.scenarioSubtitle}</p>
           </div>
-          <span className="rounded-full border border-gold/30 px-2.5 py-1 text-[10px] font-semibold text-gold">4 runs</span>
         </div>
-        <div className="mt-4 space-y-2.5">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {prompts.map((prompt) => (
-            <PromptButton key={prompt.id} prompt={prompt} isActive={prompt.id === selectedPromptId} onClick={() => onSelect(prompt.id)} />
+            <PromptButton key={prompt.id} prompt={prompt} lang={lang} isActive={prompt.id === selectedPromptId} onClick={() => onSelect(prompt.id)} labels={copy} />
           ))}
         </div>
-      </section>
+      </div>
 
-      <section className="rounded-[1.6rem] border border-slate-200 bg-white p-4 shadow-premium">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Agent Task Runner</p>
-            <h2 className="mt-1 text-xl font-semibold text-navy">Run a family office workflow</h2>
-          </div>
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Agent ready</span>
-        </div>
-        <div className="mt-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-3">
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-gold" /> Selected task
-          </div>
-          <textarea
-            value={command}
-            readOnly
-            className="mt-3 min-h-20 w-full resize-none border-0 bg-transparent text-sm leading-6 text-slate-800 outline-none"
-            placeholder="Enter a family office task, e.g. review genetic risk, check trust documents, prepare family meeting materials…"
-          />
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="rounded-xl bg-slate-100 px-3 py-2 text-xs text-slate-600">
-              <span className="font-semibold text-slate-900">Current scenario:</span> {selectedPrompt.label}
+      <div className="relative overflow-hidden rounded-[2rem] border border-[#d6c6a5] bg-[#101b2a] p-6 text-white shadow-[0_32px_90px_rgba(16,27,42,0.32)]">
+        <div className="absolute -right-12 -top-16 h-48 w-48 rounded-full bg-[#b99a5f]/25 blur-3xl" />
+        <div className="relative">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d6bd82]">{copy.agentTaskRunner}</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight">{copy.selectedTask}</h2>
             </div>
-            <button onClick={onRun} className="rounded-2xl bg-navy px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-navy/20 transition hover:bg-evergreen">
-              Run Agent
+            <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">{copy.runReady}</span>
+          </div>
+          <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-5">
+            <div className="text-xl font-semibold text-white">{selectedPrompt.label[lang]}</div>
+            <p className="mt-3 text-sm leading-7 text-slate-200">{selectedPrompt.command[lang]}</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-black/20 p-3 text-sm text-slate-200"><span className="text-[#d6bd82]">{copy.domain}</span><br />{selectedPrompt.domain[lang]}</div>
+              <div className="rounded-2xl bg-black/20 p-3 text-sm text-slate-200"><span className="text-[#d6bd82]">{copy.review}</span><br />{selectedPrompt.review[lang]}</div>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="max-w-md text-sm leading-6 text-slate-300">{copy.safetyText}</div>
+            <button onClick={onRun} className="rounded-full bg-[#d6bd82] px-7 py-3 text-sm font-bold text-[#101b2a] shadow-[0_18px_45px_rgba(214,189,130,0.24)] transition hover:bg-[#e4cb91]">
+              {copy.runAgent}
             </button>
           </div>
         </div>
-        <div className="mt-3 grid gap-2 text-xs text-slate-500 sm:grid-cols-3">
-          <div className="rounded-xl bg-slate-50 px-3 py-2">1. Classify request</div>
-          <div className="rounded-xl bg-slate-50 px-3 py-2">2. Retrieve context</div>
-          <div className="rounded-xl bg-slate-50 px-3 py-2">3. Produce review brief</div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
