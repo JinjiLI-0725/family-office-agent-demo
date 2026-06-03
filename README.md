@@ -27,14 +27,14 @@ The main UI copy, sample scenarios, Agent run trace, generated deliverables, dat
 
 ## Interaction model
 
-The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, and Audit Log. The Run Agent button uses mock local state to show a short execution sequence before returning to completed state. The workflow is structured as:
+The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, Approval Routing, and Audit Log. The Run Agent button uses mock local state to show a short execution sequence before returning to completed state. The workflow is structured as:
 
 1. Select an executive family office scenario.
 2. Review the selected Agent task.
 3. Click **Run Agent** / **运行 Agent**.
 4. Read the full-width Agent execution trace.
 5. Review the generated executive brief and professional-review requirements.
-6. Inspect retrieved mock data-room context, missing information, approval routing, and audit logs from the tabbed secondary panel.
+6. Open supporting details only when needed from the tabbed secondary panel: data-room context, missing information, approval routing, and audit logs.
 
 Clicking a different scenario updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
 

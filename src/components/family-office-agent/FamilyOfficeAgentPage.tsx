@@ -8,9 +8,10 @@ import { AgentRunStepper } from "./AgentRunStepper";
 import { AppShell } from "./AppShell";
 import { AuditLogTable } from "./AuditLogTable";
 import { DataRoomPanel } from "./DataRoomPanel";
+import { HumanApprovalPanel } from "./HumanApprovalPanel";
 import { MissingInformationPanel } from "./MissingInformationPanel";
 
-type TabId = "data" | "missing" | "audit";
+type TabId = "data" | "missing" | "approval" | "audit";
 
 const reviewChipKeys: Record<PromptId, Array<"physicianReview" | "legalReview" | "taxReview" | "investmentReview" | "familyPrincipalReview">> = {
   health: ["physicianReview", "familyPrincipalReview"],
@@ -33,6 +34,7 @@ export function FamilyOfficeAgentPage() {
   const tabs: Array<{ id: TabId; label: string; count: number }> = [
     { id: "data", label: copy.dataRoomTab, count: dataRooms.filter((source) => source.promptIds.includes(selectedPromptId)).length },
     { id: "missing", label: copy.missingTab, count: missingInformation[selectedPromptId].length },
+    { id: "approval", label: copy.approvalTab, count: reviewChips.length },
     { id: "audit", label: copy.auditTab, count: auditLogs.length },
   ];
 
@@ -88,7 +90,7 @@ export function FamilyOfficeAgentPage() {
         </header>
 
         <main className="mx-auto max-w-[1680px] space-y-4 px-5 py-5">
-          <section className="grid gap-5 xl:grid-cols-[300px_minmax(700px,1.18fr)_430px]">
+          <section className="grid gap-5 xl:grid-cols-[250px_minmax(760px,1.35fr)_390px]">
             <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} />
             <AgentRunStepper steps={agentRuns[selectedPromptId]} selectedPrompt={selectedPrompt} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
             <AgentResultPanel response={agentResponses[selectedPromptId]} lang={lang} copy={copy} reviewChips={reviewChips} />
@@ -108,6 +110,7 @@ export function FamilyOfficeAgentPage() {
             <div className="pt-4">
               {activeTab === "data" && <DataRoomPanel sources={dataRooms} selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />}
               {activeTab === "missing" && <MissingInformationPanel items={missingInformation[selectedPromptId]} lang={lang} copy={copy} embedded />}
+              {activeTab === "approval" && <HumanApprovalPanel selectedPromptId={selectedPromptId} lang={lang} copy={copy} embedded />}
               {activeTab === "audit" && <AuditLogTable lang={lang} copy={copy} embedded />}
             </div>
           </section>
