@@ -84,6 +84,22 @@ export type AuditLog = {
   action: Localized;
 };
 
+export type RoutingStatus = "Queued" | "Review Required" | "Ready for Meeting";
+
+export type ClientFollowUpProfile = {
+  id: PromptId;
+  clientSource: Localized;
+  clientType: Localized;
+  mainAdvisoryNeed: Localized;
+  insuranceSignal: Localized;
+  familyContext: Localized;
+  priority: Localized;
+  missingInformation: Localized[];
+  internalRouting: Localized;
+  nextAction: Localized;
+  routingChain: Array<{ role: Localized; status: RoutingStatus; note: Localized }>;
+};
+
 export const uiCopy = {
   en: {
     product: "Family Office AI Agent",
@@ -173,6 +189,31 @@ export const uiCopy = {
     confidential: "Confidential",
     sensitive: "Sensitive",
     highlySensitive: "Highly Sensitive",
+    clientProfileInput: "Client Profile Input",
+    clientProfile: "Client Profile",
+    clientFollowUpCard: "Client Follow-up Card",
+    clientSource: "Client Source",
+    clientType: "Client Type",
+    mainAdvisoryNeed: "Main Advisory Need",
+    insuranceSignal: "Insurance-related Signal",
+    familyContext: "Family Context",
+    followUpPriority: "Follow-up Priority",
+    missingInformationLabel: "Missing Information",
+    recommendedInternalRouting: "Recommended Internal Routing",
+    nextAction: "Next Action",
+    advisorRouting: "Advisor Routing",
+    internalReview: "Internal Review",
+    noInsuranceQuote: "No insurance quote generated",
+    activityStrip: "Agent Activity",
+    analyzingClientProfile: "Analyzing client profile",
+    checkingMissingInfo: "Checking missing info",
+    generatingFollowUpCard: "Generating follow-up card",
+    routingToAdvisors: "Routing to advisors",
+    queued: "Queued",
+    reviewRequired: "Review Required",
+    readyForMeeting: "Ready for Meeting",
+    cardSubtitle: "Internal executive memo for advisor coordination",
+    executiveMemoLabel: "Executive Memo",
     high: "High",
     medium: "Medium",
     low: "Low",
@@ -265,6 +306,31 @@ export const uiCopy = {
     confidential: "机密",
     sensitive: "敏感",
     highlySensitive: "高度敏感",
+    clientProfileInput: "客户画像输入",
+    clientProfile: "客户画像",
+    clientFollowUpCard: "客户跟进卡",
+    clientSource: "客户来源",
+    clientType: "客户类型",
+    mainAdvisoryNeed: "顾问服务需求",
+    insuranceSignal: "保险相关信号",
+    familyContext: "家族背景",
+    followUpPriority: "跟进优先级",
+    missingInformationLabel: "缺失信息",
+    recommendedInternalRouting: "建议内部流转",
+    nextAction: "后续跟进行动",
+    advisorRouting: "顾问流转",
+    internalReview: "内部复核",
+    noInsuranceQuote: "不生成保险报价",
+    activityStrip: "Agent 活动",
+    analyzingClientProfile: "分析客户画像",
+    checkingMissingInfo: "检查缺失信息",
+    generatingFollowUpCard: "生成客户跟进卡",
+    routingToAdvisors: "流转至顾问",
+    queued: "排队中",
+    reviewRequired: "需要复核",
+    readyForMeeting: "可安排会议",
+    cardSubtitle: "用于顾问协同的内部高管备忘卡",
+    executiveMemoLabel: "高管备忘",
     high: "高",
     medium: "中",
     low: "低",
@@ -451,3 +517,95 @@ export const auditLogs: AuditLog[] = [
   { user: { en: "Legal Counsel", zh: "律师" }, role: { en: "External Counsel", zh: "外部律师" }, resource: { en: "Trust Deed", zh: "信托契约" }, sensitivity: { en: "Highly Sensitive", zh: "高度敏感" }, time: { en: "1 hr ago", zh: "1 小时前" }, action: { en: "Viewed", zh: "查看" } },
   { user: { en: "Family Office Manager", zh: "家族办公室经理" }, role: { en: "Operator", zh: "运营者" }, resource: { en: "Meeting Brief", zh: "会议简报" }, sensitivity: { en: "Confidential", zh: "机密" }, time: { en: "2 hrs ago", zh: "2 小时前" }, action: { en: "Generated", zh: "生成" } },
 ];
+
+
+export const clientFollowUpProfiles: Record<PromptId, ClientFollowUpProfile> = {
+  health: {
+    id: "health",
+    clientSource: { en: "Private banker referral", zh: "私人银行转介" },
+    clientType: { en: "Multi-generational UHNW family", zh: "多代超高净值家族" },
+    mainAdvisoryNeed: { en: "Family health governance and succession readiness review", zh: "家族健康治理与传承准备度复核" },
+    insuranceSignal: { en: "Existing policies mentioned; beneficiary and underwriting context not verified", zh: "提及既有保单；受益人与核保背景尚未确认" },
+    familyContext: { en: "First generation principal with next-gen dependents across two jurisdictions", zh: "第一代家族负责人，下一代成员分布于两个司法辖区" },
+    priority: { en: "High · internal review today", zh: "高 · 今日内部复核" },
+    missingInformation: [
+      { en: "Current policy schedule and beneficiary register", zh: "现有保单清单与受益人登记" },
+      { en: "Latest health check and physician interpretation", zh: "近期体检报告及医生解读" },
+      { en: "Consent boundary for sharing medical context", zh: "医疗信息共享授权边界" },
+    ],
+    internalRouting: { en: "Relationship Manager to validate context, then principal review before insurance and tax/legal specialists join.", zh: "客户经理先确认背景，再由家办负责人复核后流转保险及税务/法律顾问。" },
+    nextAction: { en: "Send a concise information request and prepare a 20-minute internal triage meeting.", zh: "发送精简补充资料请求，并准备 20 分钟内部预判会议。" },
+    routingChain: [
+      { role: { en: "Relationship Manager", zh: "客户经理" }, status: "Ready for Meeting", note: { en: "Source verified", zh: "来源已确认" } },
+      { role: { en: "Family Office Principal", zh: "家办负责人" }, status: "Review Required", note: { en: "Approve circulation", zh: "确认流转范围" } },
+      { role: { en: "Insurance Advisor", zh: "保险顾问" }, status: "Queued", note: { en: "No quote generation", zh: "不生成报价" } },
+      { role: { en: "Tax Advisor / Legal Advisor", zh: "税务顾问 / 法律顾问" }, status: "Queued", note: { en: "Cross-border context", zh: "跨境背景待看" } },
+    ],
+  },
+  trust: {
+    id: "trust",
+    clientSource: { en: "Family principal direct inquiry", zh: "家族负责人直接咨询" },
+    clientType: { en: "Operating-company founder family", zh: "企业创始人家族" },
+    mainAdvisoryNeed: { en: "Trust, beneficiary, and asset ownership coordination", zh: "信托、受益人与资产权属协同" },
+    insuranceSignal: { en: "Beneficiary records may be outdated versus trust structure", zh: "保单受益人与信托结构可能不一致" },
+    familyContext: { en: "Upcoming liquidity event with adult children in separate tax residencies", zh: "临近流动性事件，成年子女税务居民身份不同" },
+    priority: { en: "High · principal review required", zh: "高 · 需负责人复核" },
+    missingInformation: [
+      { en: "Latest trust deed amendment", zh: "最新信托契约修订版" },
+      { en: "Insurance beneficiary register", zh: "保险受益人登记" },
+      { en: "Residency calendar for key family members", zh: "主要家族成员居留日历" },
+    ],
+    internalRouting: { en: "Legal and tax advisors should review structure before the insurance advisor comments on policy alignment.", zh: "法律与税务顾问先复核结构，再由保险顾问就保单匹配提出意见。" },
+    nextAction: { en: "Prepare counsel packet and schedule internal review before any client-facing recommendation.", zh: "准备律师资料包，并在任何客户建议前安排内部复核。" },
+    routingChain: [
+      { role: { en: "Relationship Manager", zh: "客户经理" }, status: "Ready for Meeting", note: { en: "Need confirmed", zh: "需求已确认" } },
+      { role: { en: "Family Office Principal", zh: "家办负责人" }, status: "Review Required", note: { en: "Structure sensitivity", zh: "结构敏感" } },
+      { role: { en: "Insurance Advisor", zh: "保险顾问" }, status: "Queued", note: { en: "Await legal context", zh: "等待法律背景" } },
+      { role: { en: "Tax Advisor / Legal Advisor", zh: "税务顾问 / 法律顾问" }, status: "Review Required", note: { en: "Primary review", zh: "优先复核" } },
+    ],
+  },
+  meeting: {
+    id: "meeting",
+    clientSource: { en: "Quarterly family council follow-up", zh: "季度家族委员会跟进" },
+    clientType: { en: "Established family office client", zh: "既有家办客户" },
+    mainAdvisoryNeed: { en: "Consolidated agenda for education, philanthropy, and risk follow-up", zh: "教育、慈善与风险跟进综合议程" },
+    insuranceSignal: { en: "Coverage question raised only as coordination signal, not quote request", zh: "保障问题仅作为协同信号提出，并非报价请求" },
+    familyContext: { en: "Multiple family branches need a single internal action list", zh: "多个家族分支需要统一内部行动清单" },
+    priority: { en: "Medium · meeting pack this week", zh: "中 · 本周会议包" },
+    missingInformation: [
+      { en: "Confirmed meeting attendees", zh: "确认参会人员" },
+      { en: "Updated philanthropy impact metrics", zh: "更新慈善影响指标" },
+      { en: "Education application milestone owners", zh: "教育申请里程碑负责人" },
+    ],
+    internalRouting: { en: "Relationship Manager consolidates agenda; principal decides which specialists attend.", zh: "客户经理整合议程，由家办负责人决定参会专业顾问。" },
+    nextAction: { en: "Finalize internal agenda and circulate specialist-only pre-read.", zh: "定稿内部议程，并发送仅供专业顾问预读材料。" },
+    routingChain: [
+      { role: { en: "Relationship Manager", zh: "客户经理" }, status: "Ready for Meeting", note: { en: "Agenda owner", zh: "议程负责人" } },
+      { role: { en: "Family Office Principal", zh: "家办负责人" }, status: "Ready for Meeting", note: { en: "Attendance decision", zh: "参会决策" } },
+      { role: { en: "Insurance Advisor", zh: "保险顾问" }, status: "Queued", note: { en: "Only if needed", zh: "必要时加入" } },
+      { role: { en: "Tax Advisor / Legal Advisor", zh: "税务顾问 / 法律顾问" }, status: "Queued", note: { en: "Issue-specific", zh: "按议题加入" } },
+    ],
+  },
+  weekly: {
+    id: "weekly",
+    clientSource: { en: "Internal weekly risk queue", zh: "内部每周风险队列" },
+    clientType: { en: "Portfolio of active family office relationships", zh: "活跃家办客户组合" },
+    mainAdvisoryNeed: { en: "Prioritize advisor follow-ups across health, tax, legal, and governance", zh: "跨健康、税务、法律与治理的顾问跟进优先级排序" },
+    insuranceSignal: { en: "Several cases mention policy records but none request quotation", zh: "多项个案提及保单资料，但均非报价请求" },
+    familyContext: { en: "Cross-client operating review for internal coordination", zh: "面向内部协同的跨客户运营复盘" },
+    priority: { en: "High · weekly operating review", zh: "高 · 每周运营复核" },
+    missingInformation: [
+      { en: "Owner for each exception", zh: "每项异常负责人" },
+      { en: "Client consent scope", zh: "客户授权范围" },
+      { en: "Specialist availability for follow-up", zh: "专业顾问可用时间" },
+    ],
+    internalRouting: { en: "Principal reviews priority queue, then assigns advisors by sensitivity and meeting readiness.", zh: "家办负责人复核优先队列，再按敏感度与会议准备度分配顾问。" },
+    nextAction: { en: "Lock weekly action list and circulate only to assigned advisors.", zh: "锁定每周行动清单，并仅流转至指定顾问。" },
+    routingChain: [
+      { role: { en: "Relationship Manager", zh: "客户经理" }, status: "Review Required", note: { en: "Owner mapping", zh: "负责人映射" } },
+      { role: { en: "Family Office Principal", zh: "家办负责人" }, status: "Ready for Meeting", note: { en: "Queue approved", zh: "队列已确认" } },
+      { role: { en: "Insurance Advisor", zh: "保险顾问" }, status: "Queued", note: { en: "Policy context only", zh: "仅保单背景" } },
+      { role: { en: "Tax Advisor / Legal Advisor", zh: "税务顾问 / 法律顾问" }, status: "Review Required", note: { en: "Specialist triage", zh: "专业预判" } },
+    ],
+  },
+};

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { agentResponses, agentRuns, auditLogs, dataRooms, missingInformation, prompts, type Lang, type PromptId, uiCopy } from "@/data/familyOfficeAgentMock";
+import { useState } from "react";
+import { auditLogs, clientFollowUpProfiles, dataRooms, missingInformation, prompts, type Lang, type PromptId, uiCopy } from "@/data/familyOfficeAgentMock";
 import { AgentCommandCenter } from "./AgentCommandCenter";
 import { AgentResultPanel } from "./AgentResultPanel";
 import { AgentRunStepper } from "./AgentRunStepper";
@@ -28,9 +28,9 @@ export function FamilyOfficeAgentPage() {
   const [activeStepIndex, setActiveStepIndex] = useState(3);
   const [activeTab, setActiveTab] = useState<TabId>("data");
   const copy = uiCopy[lang];
-  const selectedPrompt = useMemo(() => prompts.find((prompt) => prompt.id === selectedPromptId) ?? prompts[0], [selectedPromptId]);
+  const selectedProfile = clientFollowUpProfiles[selectedPromptId];
   const reviewChips = reviewChipKeys[selectedPromptId].map((key) => copy[key]);
-  const executionMessages = [copy.classifyingRequest, copy.scanningRecords, copy.checkingMissing, copy.briefGenerated];
+  const executionMessages = [copy.analyzingClientProfile, copy.checkingMissingInfo, copy.generatingFollowUpCard, copy.routingToAdvisors];
   const tabs: Array<{ id: TabId; label: string; count: number }> = [
     { id: "data", label: copy.dataRoomTab, count: dataRooms.filter((source) => source.promptIds.includes(selectedPromptId)).length },
     { id: "missing", label: copy.missingTab, count: missingInformation[selectedPromptId].length },
@@ -61,15 +61,15 @@ export function FamilyOfficeAgentPage() {
 
   return (
     <AppShell>
-      <div className="min-h-screen bg-[#f5f3ee]">
-        <header className="sticky top-0 z-30 border-b border-[#e5ded1] bg-white/90 backdrop-blur-xl">
+      <div className="min-h-screen bg-[#f6f8fb]">
+        <header className="sticky top-0 z-30 border-b border-[#dbe3ec] bg-white/90 backdrop-blur-xl">
           <div className="mx-auto flex max-w-[1680px] flex-wrap items-center justify-between gap-3 px-5 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#d8bd80] bg-[#fff8e8] text-sm font-bold text-[#8a6f3d]">FO</div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#c9d7e5] bg-[#f7fafc] text-sm font-bold text-[#17324d]">FO</div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-lg font-semibold text-[#182230]">{copy.product}</h1>
-                  <span className="rounded-full border border-[#d8bd80] bg-[#fff8e8] px-2.5 py-1 text-xs font-semibold text-[#7a5f2e]">{copy.executiveDemo}</span>
+                  <span className="rounded-full border border-[#d6bf83] bg-[#fffaf0] px-2.5 py-1 text-xs font-semibold text-[#7a5f2e]">{copy.executiveDemo}</span>
                 </div>
                 <p className="text-xs text-[#667085]">{copy.commandCenter}</p>
               </div>
@@ -84,16 +84,16 @@ export function FamilyOfficeAgentPage() {
               </div>
               <span className="rounded-full bg-[#eef7f3] px-3 py-1.5 text-xs font-semibold text-[#1f6b5a]">{copy.mockDataOnly}</span>
               <span className="rounded-full bg-[#f1f4f7] px-3 py-1.5 text-xs font-semibold text-[#536071]">{copy.noBackendConnected}</span>
-              <span className="rounded-full bg-[#fff8e8] px-3 py-1.5 text-xs font-semibold text-[#7a5f2e]">{copy.pendingReviews}</span>
+              <span className="rounded-full bg-[#fffaf0] px-3 py-1.5 text-xs font-semibold text-[#7a5f2e]">{copy.pendingReviews}</span>
             </div>
           </div>
         </header>
 
         <main className="mx-auto max-w-[1680px] space-y-4 px-5 py-5">
-          <section className="grid gap-5 xl:grid-cols-[250px_minmax(760px,1.35fr)_390px]">
-            <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} />
-            <AgentRunStepper steps={agentRuns[selectedPromptId]} selectedPrompt={selectedPrompt} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
-            <AgentResultPanel response={agentResponses[selectedPromptId]} lang={lang} copy={copy} reviewChips={reviewChips} />
+          <section className="grid gap-5 xl:grid-cols-[320px_minmax(680px,1.35fr)_360px]">
+            <AgentCommandCenter prompts={prompts} selectedPromptId={selectedPromptId} lang={lang} copy={copy} onSelect={handleSelectPrompt} profile={selectedProfile} />
+            <AgentRunStepper profile={selectedProfile} lang={lang} copy={copy} runCount={runCount} onRun={startMockRun} isRunning={isRunning} activeStepIndex={activeStepIndex} executionMessages={executionMessages} />
+            <AgentResultPanel profile={selectedProfile} lang={lang} copy={copy} />
           </section>
 
           <section className="rounded-[1.75rem] border border-[#e0d8ca] bg-white p-4 shadow-[0_18px_50px_rgba(40,35,28,0.07)]">
