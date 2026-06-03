@@ -1,9 +1,9 @@
-import type { AgentRunStep, Lang, StepStatus } from "@/data/familyOfficeAgentMock";
+import type { AgentRunStep, Lang, Prompt, StepStatus } from "@/data/familyOfficeAgentMock";
 
 const statusStyles: Record<StepStatus, string> = {
-  Completed: "border-emerald-300/30 bg-emerald-300/10 text-emerald-100",
-  "In Review": "border-[#d6bd82]/40 bg-[#d6bd82]/15 text-[#f1d99c]",
-  "Needs Human Approval": "border-white/20 bg-white/[0.12] text-white",
+  Completed: "bg-[#e8f6ef] text-[#176145] ring-[#bfe4d1]",
+  "In Review": "bg-[#fff6df] text-[#8a6419] ring-[#ead198]",
+  "Needs Human Approval": "bg-[#eef2f6] text-[#415064] ring-[#d7dee8]",
 };
 
 const statusLabel: Record<Lang, Record<StepStatus, string>> = {
@@ -11,33 +11,49 @@ const statusLabel: Record<Lang, Record<StepStatus, string>> = {
   zh: { Completed: "已完成", "In Review": "复核中", "Needs Human Approval": "需要人工确认" },
 };
 
-export function AgentRunStepper({ steps, lang, copy, runCount }: { steps: AgentRunStep[]; lang: Lang; copy: Record<string, string>; runCount: number }) {
+export function AgentRunStepper({ steps, selectedPrompt, lang, copy, runCount, onRun }: { steps: AgentRunStep[]; selectedPrompt: Prompt; lang: Lang; copy: Record<string, string>; runCount: number; onRun: () => void }) {
   return (
-    <section className="relative overflow-hidden rounded-[2.2rem] border border-[#1e2f43] bg-[#0b1421] p-7 text-white shadow-[0_34px_100px_rgba(12,20,33,0.32)]">
-      <div className="absolute left-1/2 top-0 h-56 w-[70%] -translate-x-1/2 rounded-full bg-[#b99a5f]/15 blur-3xl" />
-      <div className="relative flex flex-wrap items-center justify-between gap-4">
+    <section className="rounded-[1.75rem] border border-[#e0d8ca] bg-white p-5 shadow-[0_18px_50px_rgba(40,35,28,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#eee8dc] pb-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#d6bd82]">{copy.workflowTitle}</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">{copy.workflowSubtitle}</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7b45]">{copy.agentWorkspace}</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#182230]">{selectedPrompt.label[lang]}</h2>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-100">{copy.runCompleted}</span>
-          <span className="rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs text-slate-300">Run #{runCount}</span>
-        </div>
+        <button onClick={onRun} className="rounded-full bg-[#1f6b5a] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(31,107,90,0.2)] transition hover:bg-[#195748]">
+          {copy.runAgent}
+        </button>
       </div>
-      <div className="relative mt-8 grid gap-4 lg:grid-cols-6">
+
+      <div className="mt-5 rounded-2xl border border-[#e0d8ca] bg-[#fbfaf6] p-4">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9a7b45]">{copy.selectedTask}</div>
+        <p className="mt-2 text-sm leading-6 text-[#3f4a5a]">{selectedPrompt.command[lang]}</p>
+      </div>
+
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7b45]">{copy.workflowTitle}</p>
+          <h3 className="mt-1 text-lg font-semibold text-[#182230]">{copy.workflowSubtitle}</h3>
+        </div>
+        <span className="rounded-full bg-[#eef7f3] px-3 py-1.5 text-xs font-semibold text-[#1f6b5a] ring-1 ring-[#cbe9dd]">{copy.runCompleted} · #{runCount}</span>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {steps.map((step, index) => (
-          <article key={`${step.name.en}-${index}`} className="relative rounded-[1.4rem] border border-white/10 bg-white/[0.055] p-4 backdrop-blur">
-            {index < steps.length - 1 && <div className="absolute left-[calc(100%-0.5rem)] top-10 hidden h-px w-6 bg-[#d6bd82]/40 lg:block" />}
+          <article key={`${step.name.en}-${index}`} className="rounded-2xl border border-[#e5e0d6] bg-white p-4 shadow-[0_8px_22px_rgba(40,35,28,0.05)]">
             <div className="flex items-start justify-between gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#d6bd82]/40 bg-[#d6bd82]/15 text-sm font-bold text-[#d6bd82]">{index + 1}</div>
-              <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${statusStyles[step.status]}`}>{statusLabel[lang][step.status]}</span>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f4ead3] text-sm font-bold text-[#8a6f3d]">{index + 1}</div>
+              <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ring-1 ${statusStyles[step.status]}`}>{statusLabel[lang][step.status]}</span>
             </div>
-            <h3 className="mt-4 text-base font-semibold leading-snug text-white">{step.name[lang]}</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{step.detail[lang]}</p>
-            <div className="mt-4 rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-xs font-semibold text-[#d6bd82]">{step.metadata[lang]}</div>
+            <h4 className="mt-3 text-sm font-semibold text-[#182230]">{step.name[lang]}</h4>
+            <p className="mt-2 text-xs leading-5 text-[#667085]">{step.detail[lang]}</p>
+            <div className="mt-3 rounded-full bg-[#f6f8fa] px-3 py-1.5 text-xs font-semibold text-[#536071]">{step.metadata[lang]}</div>
           </article>
         ))}
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-[#d8bd80] bg-[#fff8e8] p-4">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9a7b45]">{copy.runSummary}</div>
+        <p className="mt-2 text-sm leading-6 text-[#3f4a5a]">{selectedPrompt.runSummary[lang]}</p>
       </div>
     </section>
   );

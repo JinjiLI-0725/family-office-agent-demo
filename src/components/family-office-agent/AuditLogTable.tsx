@@ -1,8 +1,8 @@
 import { auditLogs, type Lang } from "@/data/familyOfficeAgentMock";
 
-export function AuditLogTable({ lang, copy }: { lang: Lang; copy: Record<string, string> }) {
+export function AuditLogTable({ lang, copy, embedded = false }: { lang: Lang; copy: Record<string, string>; embedded?: boolean }) {
   return (
-    <section id="audit-log" className="rounded-[2rem] border border-[#d8d1c4] bg-white p-6 shadow-[0_20px_70px_rgba(44,37,29,0.08)]">
+    <section id="audit-log" className={embedded ? "" : "rounded-[2rem] border border-[#d8d1c4] bg-white p-6 shadow-[0_20px_70px_rgba(44,37,29,0.08)]"}>
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9a7b45]">{copy.auditLog}</p>

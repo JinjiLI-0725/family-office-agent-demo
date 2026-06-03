@@ -2,10 +2,10 @@ import type { DataRoomSource, Lang, PromptId } from "@/data/familyOfficeAgentMoc
 
 const sensitivityStyles = "bg-[#f7f0df] text-[#7b6238] ring-[#d6c6a5]";
 
-export function DataRoomPanel({ sources, selectedPromptId, lang, copy }: { sources: DataRoomSource[]; selectedPromptId: PromptId; lang: Lang; copy: Record<string, string> }) {
+export function DataRoomPanel({ sources, selectedPromptId, lang, copy, embedded = false }: { sources: DataRoomSource[]; selectedPromptId: PromptId; lang: Lang; copy: Record<string, string>; embedded?: boolean }) {
   const activeSources = sources.filter((source) => source.promptIds.includes(selectedPromptId));
   return (
-    <section id="data-room" className="rounded-[2rem] border border-[#d8d1c4] bg-white p-6 shadow-[0_20px_70px_rgba(44,37,29,0.08)]">
+    <section id="data-room" className={embedded ? "" : "rounded-[2rem] border border-[#d8d1c4] bg-white p-6 shadow-[0_20px_70px_rgba(44,37,29,0.08)]"}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9a7b45]">{copy.dataRoom}</p>
@@ -13,7 +13,7 @@ export function DataRoomPanel({ sources, selectedPromptId, lang, copy }: { sourc
         </div>
         <span className="rounded-full bg-[#101b2a] px-3 py-1.5 text-xs font-semibold text-white">{activeSources.length} {copy.sources}</span>
       </div>
-      <div className="mt-5 space-y-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {activeSources.map((source) => (
           <article key={source.name.en} className="rounded-[1.3rem] border border-[#e5ded1] bg-[#fbf8f1] p-4">
             <div className="flex items-start justify-between gap-3">

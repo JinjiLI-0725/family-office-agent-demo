@@ -1,6 +1,6 @@
 # Family Office AI Agent Demo
 
-A standalone bilingual front-end demo for a premium **Family Office Agent Command Center**. The demo is designed to feel like an executable agent workflow rather than a static document dashboard: a family office manager selects a task, runs the Agent, and sees classification, private data-room retrieval, missing-information checks, risk flagging, generated professional-review materials, approvals, and audit activity.
+A standalone bilingual front-end demo for a premium **Family Office Agent Command Center**. The demo uses a light, application-like workflow screen rather than a long landing page: a family office manager selects a scenario, runs the Agent, reviews the execution trace, and reads a generated professional-review brief.
 
 ## Demo purpose
 
@@ -27,14 +27,14 @@ The main UI copy, sample scenarios, Agent run trace, generated deliverables, dat
 
 ## Interaction model
 
-The page is intentionally not a static dashboard. The workflow is structured as:
+The page is intentionally not a static dashboard. The main screen is organized as a Quote-Agent-style workspace with a Scenario Library, Agent Workspace, Output & Review panel, and compact secondary tabs for Data Room Context, Missing Information, and Audit Log. The workflow is structured as:
 
 1. Select an executive family office scenario.
 2. Review the selected Agent task.
 3. Click **Run Agent** / **运行 Agent**.
 4. Read the full-width Agent execution trace.
 5. Review the generated executive brief and professional-review requirements.
-6. Inspect retrieved mock data-room context, missing information, approval routing, and audit logs.
+6. Inspect retrieved mock data-room context, missing information, approval routing, and audit logs from the tabbed secondary panel.
 
 Clicking a different scenario updates the active domains, agent run trace, generated deliverable, data-room context, missing-information queue, and approval requirements.
 

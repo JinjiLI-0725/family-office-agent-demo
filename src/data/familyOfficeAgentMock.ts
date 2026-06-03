@@ -20,6 +20,7 @@ export type Prompt = {
   domain: Localized;
   description: Localized;
   review: Localized;
+  runSummary: Localized;
   riskCount: number;
   activeDomainIds: string[];
 };
@@ -89,6 +90,22 @@ export const uiCopy = {
     noBackend: "No Backend Connected",
     pendingReviews: "9 pending review items",
     scenarioSelector: "Executive Workflows",
+    scenarioLibrary: "Scenario Library",
+    agentWorkspace: "Agent Workspace",
+    outputReview: "Output & Review",
+    generatedBrief: "Generated Brief",
+    mockDataOnly: "Mock Data Only",
+    noBackendConnected: "No Backend Connected",
+    runSummary: "Agent reasoning summary",
+    dataRoomTab: "Data Room Context",
+    missingTab: "Missing Information",
+    auditTab: "Audit Log",
+    physicianReview: "Physician Review",
+    legalReview: "Legal Review",
+    taxReview: "Tax Review",
+    investmentReview: "Investment Review",
+    familyPrincipalReview: "Principal Review",
+    premiumThesis: "This is a premium workflow Agent, not a dashboard.",
     scenarioSubtitle: "Select a family office task for the Agent to run.",
     domain: "Domain",
     riskCount: "Risk count",
@@ -147,6 +164,22 @@ export const uiCopy = {
     noBackend: "未连接后端",
     pendingReviews: "9 项待复核事项",
     scenarioSelector: "可执行工作流",
+    scenarioLibrary: "场景库",
+    agentWorkspace: "Agent 工作台",
+    outputReview: "输出与复核",
+    generatedBrief: "生成简报",
+    mockDataOnly: "仅使用模拟数据",
+    noBackendConnected: "未连接真实后端",
+    runSummary: "Agent 推理摘要",
+    dataRoomTab: "资料库上下文",
+    missingTab: "缺失资料",
+    auditTab: "审计记录",
+    physicianReview: "医生复核",
+    legalReview: "律师复核",
+    taxReview: "税务师复核",
+    investmentReview: "投资顾问复核",
+    familyPrincipalReview: "负责人复核",
+    premiumThesis: "这不是一个后台看板，而是一个真正可以执行家族办公室任务的 Agent 工作台。",
     scenarioSubtitle: "选择一个家族办公室任务，由 Agent 执行。",
     domain: "领域",
     riskCount: "风险事项",
@@ -209,10 +242,10 @@ export const domains: Domain[] = [
 ];
 
 export const prompts: Prompt[] = [
-  { id: "health", label: { en: "Health & Genetic Risk Review", zh: "健康与遗传风险复核" }, domain: { en: "Health / Medical", zh: "健康 / 医疗" }, description: { en: "Review mock health and genetic-risk records and prepare supporting material for physician review.", zh: "复核模拟健康与遗传风险资料，并准备医生复核辅助材料。" }, review: { en: "Physician / Genetic Counselor", zh: "医生 / 遗传咨询师" }, riskCount: 3, command: { en: "Review family health and genetic risk across recent records and prepare supporting materials for physician review.", zh: "复核近期家族健康与遗传风险资料，并准备医生复核辅助材料。" }, activeDomainIds: ["health", "privacy"] },
-  { id: "trust", label: { en: "Asset & Trust Document Check", zh: "资产与信托文件检查" }, domain: { en: "Assets / Legal / Tax", zh: "资产 / 法律 / 税务" }, description: { en: "Check trust, insurance, shareholding, and property documents for review windows and gaps.", zh: "检查信托、保险、公司股权和房产文件的复核窗口与缺口。" }, review: { en: "Legal / Tax / Investment Advisors", zh: "律师 / 税务顾问 / 投资顾问" }, riskCount: 4, command: { en: "Check asset and trust documents for upcoming review windows, outdated beneficiary records, and missing governance files.", zh: "检查资产与信托文件的复核窗口、过期受益人信息和缺失治理文件。" }, activeDomainIds: ["wealth", "legal", "tax", "privacy"] },
-  { id: "meeting", label: { en: "Family Meeting Brief", zh: "家族会议材料准备" }, domain: { en: "Governance / Next Generation", zh: "治理 / 下一代发展" }, description: { en: "Prepare an advisor-ready meeting packet with risks, agenda, materials, and task ownership.", zh: "准备包含风险、议程、材料和任务归属的会议资料包。" }, review: { en: "Family Principal + Advisors", zh: "家族负责人 + 顾问" }, riskCount: 6, command: { en: "Prepare next week’s family meeting brief with risk items, agenda, generated materials, and task ownership.", zh: "准备下周家族会议简报，包括风险事项、议程、生成材料和任务归属。" }, activeDomainIds: ["health", "legal", "education", "governance", "philanthropy"] },
-  { id: "weekly", label: { en: "Weekly Risk Summary", zh: "本周风险事项总结" }, domain: { en: "Cross-domain Risk", zh: "跨领域风险" }, description: { en: "Summarize this week’s open risk items and route confirmations to professionals.", zh: "总结本周未关闭风险事项，并安排专业人士确认。" }, review: { en: "Multi-advisor Review", zh: "多顾问复核" }, riskCount: 5, command: { en: "Summarize this week’s family office risk items and group next steps for professional review.", zh: "总结本周家族办公室风险事项，并整理后续专业复核行动。" }, activeDomainIds: ["health", "legal", "tax", "education", "philanthropy", "privacy"] },
+  { id: "health", label: { en: "Health & Genetic Risk Review", zh: "健康与遗传风险复核" }, domain: { en: "Health / Medical", zh: "健康 / 医疗" }, description: { en: "Review mock health and genetic-risk records and prepare supporting material for physician review.", zh: "复核模拟健康与遗传风险资料，并准备医生复核辅助材料。" }, review: { en: "Physician / Genetic Counselor", zh: "医生 / 遗传咨询师" }, runSummary: { en: "The Agent scanned 31 mock records, identified 3 missing or review-sensitive items, and prepared a physician-review brief.", zh: "Agent 已检索 31 条模拟资料，识别 3 项缺失或需复核事项，并生成医生复核材料。" }, riskCount: 3, command: { en: "Review family health and genetic risk across recent records and prepare supporting materials for physician review.", zh: "复核近期家族健康与遗传风险资料，并准备医生复核辅助材料。" }, activeDomainIds: ["health", "privacy"] },
+  { id: "trust", label: { en: "Asset & Trust Document Check", zh: "资产与信托文件检查" }, domain: { en: "Assets / Legal / Tax", zh: "资产 / 法律 / 税务" }, description: { en: "Check trust, insurance, shareholding, and property documents for review windows and gaps.", zh: "检查信托、保险、公司股权和房产文件的复核窗口与缺口。" }, review: { en: "Legal / Tax / Investment Advisors", zh: "律师 / 税务顾问 / 投资顾问" }, runSummary: { en: "The Agent scanned 30 mock records, found 3 document exceptions, and prepared a counsel-ready review checklist.", zh: "Agent 已检索 30 份模拟资料，发现 3 项文件异常，并生成律师复核清单。" }, riskCount: 4, command: { en: "Check asset and trust documents for upcoming review windows, outdated beneficiary records, and missing governance files.", zh: "检查资产与信托文件的复核窗口、过期受益人信息和缺失治理文件。" }, activeDomainIds: ["wealth", "legal", "tax", "privacy"] },
+  { id: "meeting", label: { en: "Family Meeting Brief", zh: "家族会议材料准备" }, domain: { en: "Governance / Next Generation", zh: "治理 / 下一代发展" }, description: { en: "Prepare an advisor-ready meeting packet with risks, agenda, materials, and task ownership.", zh: "准备包含风险、议程、材料和任务归属的会议资料包。" }, review: { en: "Family Principal + Advisors", zh: "家族负责人 + 顾问" }, runSummary: { en: "The Agent scanned 46 mock records, organized 5 agenda blocks, and generated meeting materials for principal approval.", zh: "Agent 已检索 46 条模拟资料，整理 5 个会议议程模块，并生成负责人确认材料。" }, riskCount: 6, command: { en: "Prepare next week’s family meeting brief with risk items, agenda, generated materials, and task ownership.", zh: "准备下周家族会议简报，包括风险事项、议程、生成材料和任务归属。" }, activeDomainIds: ["health", "legal", "education", "governance", "philanthropy"] },
+  { id: "weekly", label: { en: "Weekly Risk Summary", zh: "本周风险事项总结" }, domain: { en: "Cross-domain Risk", zh: "跨领域风险" }, description: { en: "Summarize this week’s open risk items and route confirmations to professionals.", zh: "总结本周未关闭风险事项，并安排专业人士确认。" }, review: { en: "Multi-advisor Review", zh: "多顾问复核" }, runSummary: { en: "The Agent scanned 58 mock records, prioritized 5 open risk items, and prepared a multi-advisor confirmation plan.", zh: "Agent 已检索 58 条模拟资料，梳理 5 项未关闭风险，并生成多顾问确认计划。" }, riskCount: 5, command: { en: "Summarize this week’s family office risk items and group next steps for professional review.", zh: "总结本周家族办公室风险事项，并整理后续专业复核行动。" }, activeDomainIds: ["health", "legal", "tax", "education", "philanthropy", "privacy"] },
 ];
 
 export const agentRuns: Record<PromptId, AgentRunStep[]> = {
