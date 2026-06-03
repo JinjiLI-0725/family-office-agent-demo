@@ -1,6 +1,6 @@
-# Family Office Client Intake Agent Demo
+# Family Office AI Agent Demo
 
-A standalone bilingual front-end demo for a **Family Office Client Intake Agent** / **家族办公室客户引进 Agent**. The demo uses a light, application-like workflow screen rather than a long landing page: a relationship manager or business development user selects a referral scenario, runs the Agent, reviews the execution trace, and reads a generated internal Client Intake Card.
+A standalone bilingual front-end demo for a **Family Office AI Agent** / **家族办公室 AI Agent**. The demo uses a light, application-like workflow screen rather than a long landing page: a relationship manager or business development user selects a referral scenario, runs the Agent, reviews the execution trace, and reads a generated internal Client Intake Card.
 
 ## Demo purpose
 
@@ -30,7 +30,7 @@ The page is intentionally not a static dashboard. The main screen remains organi
 
 1. Select a family office client intake or referral scenario.
 2. Review the selected intake task.
-3. Click **Generate Card** / **生成卡片**.
+3. Click **Generate Card** / **生成跟进卡**.
 4. Read the full-width Agent execution trace.
 5. Review the generated Client Intake Card / 内部转介卡 and advisor-review requirements.
 6. Open supporting details only when needed from the tabbed secondary panel: intake fields, missing information, internal routing, and audit logs.

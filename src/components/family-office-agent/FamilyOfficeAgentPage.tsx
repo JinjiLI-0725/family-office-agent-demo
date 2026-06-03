@@ -134,11 +134,11 @@ export function FamilyOfficeAgentPage() {
   };
 
   const commandTitle =
-    lang === "zh" ? "你希望家族办公室保险 Agent 做什么？" : "What should the Family Office Insurance Agent do?";
+    lang === "zh" ? "你希望家族办公室 AI Agent 做什么？" : "What should the Family Office AI Agent do?";
 
   const commandSubtitle =
     lang === "zh"
-      ? "选择保险需求，Agent 自动检索模拟资料、识别保障缺口、生成复核简报。"
+      ? "选择客户场景，Agent 自动整理模拟资料、识别顾问需求，并生成内部跟进卡。"
       : "Select insurance needs. The Agent retrieves mock context, identifies protection gaps, and generates a review-ready brief.";
 
   const briefSections = response.sections;
